@@ -1,0 +1,793 @@
+{
+  "manifest_version": "1.0.0",
+  "timestamp": "2026-07-02T11:05:00Z",
+  "environment": "production",
+  "cluster": "prod-cluster-2026",
+  "status": "ACTIVE",
+  "observability_platform": {
+    "primary": "Datadog",
+    "api_version": "v2",
+    "api_endpoint": "https://api.datadoghq.com",
+    "app_key_secure": "{{DATADOG_APP_KEY}}",
+    "api_key_secure": "{{DATADOG_API_KEY}}"
+  },
+  "datadog_agent": {
+    "version": "7.50.0",
+    "deployment_method": "Kubernetes DaemonSet",
+    "namespace": "datadog",
+    "enabled": true,
+    "configuration": {
+      "logs": {
+        "enabled": true,
+        "service": "unified-ai-testing",
+        "env": "production",
+        "version": "1.1.0",
+        "collection": {
+          "method": "container",
+          "format": "json",
+          "rotation": true,
+          "max_size": "10GB"
+        },
+        "processors": [
+          {
+            "type": "remapper",
+            "attribute": "message",
+            "target": "msg"
+          },
+          {
+            "type": "attribute_remapper",
+            "source_attributes": ["timestamp"],
+            "target_attribute": "@timestamp"
+          }
+        ]
+      },
+      "apm": {
+        "enabled": true,
+        "apm_enabled": true,
+        "dd_trace_enabled": true,
+        "sampling_rate": 1.0,
+        "environment": "production",
+        "service_name": "unified-ai-testing",
+        "trace_agent": {
+          "port": 8126,
+          "log_level": "info",
+          "enabled": true
+        },
+        "profiling": {
+          "enabled": true,
+          "cpu_enabled": true,
+          "heap_enabled": true,
+          "lock_enabled": true,
+          "endpoint_rate_limit": 100
+        }
+      },
+      "metrics": {
+        "enabled": true,
+        "port": 8125,
+        "protocol": "udp",
+        "tags": {
+          "env": "prod",
+          "service": "unified-ai-testing",
+          "team": "platform",
+          "region": "us-east-1"
+        },
+        "custom_metrics": [
+          {
+            "name": "app.request.duration",
+            "type": "histogram",
+            "unit": "milliseconds",
+            "tags": ["endpoint", "method", "status"]
+          },
+          {
+            "name": "app.database.query_time",
+            "type": "histogram",
+            "unit": "milliseconds",
+            "tags": ["query_type", "table"]
+          },
+          {
+            "name": "app.cache.hit_ratio",
+            "type": "gauge",
+            "unit": "percent",
+            "tags": ["cache_name"]
+          },
+          {
+            "name": "app.task.creation_time",
+            "type": "gauge",
+            "unit": "milliseconds",
+            "tags": ["priority", "user_id"]
+          },
+          {
+            "name": "app.error.count",
+            "type": "counter",
+            "unit": "errors",
+            "tags": ["error_type", "service", "endpoint"]
+          }
+        ]
+      },
+      "process_monitoring": {
+        "enabled": true,
+        "containers": true,
+        "processes": [
+          "node",
+          "postgres",
+          "nginx",
+          "redis"
+        ]
+      },
+      "system": {
+        "load_average": true,
+        "disk_usage": true,
+        "memory_usage": true,
+        "network_metrics": true,
+        "cpu_metrics": true
+      }
+    },
+    "kubernetes_integration": {
+      "enabled": true,
+      "cluster_name": "prod-cluster-2026",
+      "node_labels_as_tags": true,
+      "pod_labels_as_tags": true,
+      "namespace_labels_as_tags": true,
+      "collect_pod_events": true,
+      "collect_kubernetes_events": true
+    }
+  },
+  "health_checks": {
+    "enabled": true,
+    "interval_seconds": 30,
+    "timeout_seconds": 5,
+    "retry_count": 3,
+    "checks": [
+      {
+        "name": "application_health",
+        "type": "http",
+        "endpoint": "https://prod.unified-ai-testing.com/health",
+        "method": "GET",
+        "expected_status": 200,
+        "tags": ["critical", "application"],
+        "alert_on_failure": true,
+        "severity": "critical"
+      },
+      {
+        "name": "api_readiness",
+        "type": "http",
+        "endpoint": "https://prod.unified-ai-testing.com/api/health",
+        "method": "GET",
+        "expected_status": 200,
+        "tags": ["critical", "api"],
+        "alert_on_failure": true,
+        "severity": "critical"
+      },
+      {
+        "name": "database_connectivity",
+        "type": "tcp",
+        "host": "staging-db-4521.c9akciq32.us-east-1.rds.amazonaws.com",
+        "port": 5432,
+        "tags": ["critical", "database"],
+        "alert_on_failure": true,
+        "severity": "critical"
+      },
+      {
+        "name": "cache_health",
+        "type": "tcp",
+        "host": "redis-prod.us-east-1.elasticache.amazonaws.com",
+        "port": 6379,
+        "tags": ["important", "cache"],
+        "alert_on_failure": true,
+        "severity": "high"
+      },
+      {
+        "name": "dns_resolution",
+        "type": "dns",
+        "hostname": "prod.unified-ai-testing.com",
+        "tags": ["network"],
+        "alert_on_failure": false,
+        "severity": "low"
+      },
+      {
+        "name": "certificate_expiry",
+        "type": "https",
+        "endpoint": "https://prod.unified-ai-testing.com",
+        "warning_days": 30,
+        "critical_days": 7,
+        "tags": ["security"],
+        "alert_on_failure": true,
+        "severity": "high"
+      }
+    ]
+  },
+  "error_catching": {
+    "enabled": true,
+    "log_level": "ERROR",
+    "capture_stack_traces": true,
+    "capture_context": true,
+    "capture_user_info": true,
+    "error_types": [
+      {
+        "name": "ApplicationError",
+        "alert_threshold": 10,
+        "time_window_minutes": 5,
+        "severity": "high"
+      },
+      {
+        "name": "DatabaseError",
+        "alert_threshold": 5,
+        "time_window_minutes": 5,
+        "severity": "critical"
+      },
+      {
+        "name": "ValidationError",
+        "alert_threshold": 50,
+        "time_window_minutes": 5,
+        "severity": "low"
+      },
+      {
+        "name": "AuthenticationError",
+        "alert_threshold": 20,
+        "time_window_minutes": 5,
+        "severity": "high"
+      },
+      {
+        "name": "TimeoutError",
+        "alert_threshold": 5,
+        "time_window_minutes": 5,
+        "severity": "high"
+      },
+      {
+        "name": "RateLimitError",
+        "alert_threshold": 100,
+        "time_window_minutes": 5,
+        "severity": "medium"
+      }
+    ],
+    "error_tracking": {
+      "enabled": true,
+      "group_by": ["error_type", "service", "endpoint"],
+      "fingerprinting": true,
+      "auto_deduplicate": true,
+      "retention_days": 90
+    }
+  },
+  "alert_thresholds": {
+    "enabled": true,
+    "notification_channels": [
+      {
+        "name": "slack_critical",
+        "type": "slack",
+        "channel": "#production-critical",
+        "mention": "@on-call-sre",
+        "for_severity": ["critical"]
+      },
+      {
+        "name": "slack_alerts",
+        "type": "slack",
+        "channel": "#production-alerts",
+        "mention": "@sre-team",
+        "for_severity": ["high", "medium"]
+      },
+      {
+        "name": "pagerduty",
+        "type": "pagerduty",
+        "integration_key": "{{PAGERDUTY_KEY}}",
+        "for_severity": ["critical"]
+      },
+      {
+        "name": "email",
+        "type": "email",
+        "recipients": ["sre-team@company.com"],
+        "for_severity": ["critical", "high"]
+      }
+    ],
+    "alert_rules": [
+      {
+        "id": "error_rate_spike",
+        "name": "Error Rate Spike",
+        "metric": "trace.web.request.errors",
+        "comparison": "above",
+        "threshold": 2.0,
+        "threshold_duration": 300,
+        "unit": "percent",
+        "aggregation": "sum",
+        "severity": "critical",
+        "tags": ["application"],
+        "notification_channels": ["slack_critical", "pagerduty"],
+        "action": "page_oncall"
+      },
+      {
+        "id": "high_latency",
+        "name": "High API Latency",
+        "metric": "trace.web.request.duration.by.service_name",
+        "comparison": "above",
+        "threshold": 300,
+        "threshold_duration": 300,
+        "unit": "milliseconds",
+        "percentile": 95,
+        "aggregation": "avg",
+        "severity": "high",
+        "tags": ["performance"],
+        "notification_channels": ["slack_alerts"],
+        "action": "investigate"
+      },
+      {
+        "id": "database_latency",
+        "name": "Database Query Slow",
+        "metric": "trace.postgres.query.duration",
+        "comparison": "above",
+        "threshold": 100,
+        "threshold_duration": 300,
+        "unit": "milliseconds",
+        "percentile": 95,
+        "aggregation": "avg",
+        "severity": "high",
+        "tags": ["database"],
+        "notification_channels": ["slack_alerts"],
+        "action": "investigate"
+      },
+      {
+        "id": "cpu_high",
+        "name": "High CPU Utilization",
+        "metric": "system.cpu.user",
+        "comparison": "above",
+        "threshold": 85,
+        "threshold_duration": 300,
+        "unit": "percent",
+        "aggregation": "avg",
+        "severity": "high",
+        "tags": ["infrastructure"],
+        "notification_channels": ["slack_alerts"],
+        "action": "scale_or_investigate"
+      },
+      {
+        "id": "memory_high",
+        "name": "High Memory Utilization",
+        "metric": "system.mem.pct_usable",
+        "comparison": "below",
+        "threshold": 15,
+        "threshold_duration": 300,
+        "unit": "percent",
+        "aggregation": "avg",
+        "severity": "high",
+        "tags": ["infrastructure"],
+        "notification_channels": ["slack_alerts"],
+        "action": "scale_or_investigate"
+      },
+      {
+        "id": "disk_full",
+        "name": "Disk Space Critical",
+        "metric": "system.disk.pct_used",
+        "comparison": "above",
+        "threshold": 90,
+        "threshold_duration": 60,
+        "unit": "percent",
+        "aggregation": "avg",
+        "severity": "critical",
+        "tags": ["infrastructure"],
+        "notification_channels": ["slack_critical", "pagerduty"],
+        "action": "immediate_action"
+      },
+      {
+        "id": "service_down",
+        "name": "Service Down",
+        "metric": "up",
+        "comparison": "equals",
+        "threshold": 0,
+        "threshold_duration": 30,
+        "unit": "boolean",
+        "aggregation": "avg",
+        "severity": "critical",
+        "tags": ["critical", "application"],
+        "notification_channels": ["slack_critical", "pagerduty", "email"],
+        "action": "page_oncall_immediately"
+      },
+      {
+        "id": "auth_failures",
+        "name": "Authentication Failures Spike",
+        "metric": "trace.auth.failure.count",
+        "comparison": "above",
+        "threshold": 20,
+        "threshold_duration": 300,
+        "unit": "count",
+        "aggregation": "sum",
+        "severity": "high",
+        "tags": ["security"],
+        "notification_channels": ["slack_alerts", "pagerduty"],
+        "action": "investigate_security"
+      },
+      {
+        "id": "rate_limit_exceeded",
+        "name": "Rate Limit Exceeded",
+        "metric": "trace.rate_limit.exceeded.count",
+        "comparison": "above",
+        "threshold": 100,
+        "threshold_duration": 300,
+        "unit": "count",
+        "aggregation": "sum",
+        "severity": "medium",
+        "tags": ["performance"],
+        "notification_channels": ["slack_alerts"],
+        "action": "investigate"
+      },
+      {
+        "id": "ssl_certificate_expiring",
+        "name": "SSL Certificate Expiring Soon",
+        "metric": "ssl.certificate.days_until_expiry",
+        "comparison": "below",
+        "threshold": 30,
+        "threshold_duration": 0,
+        "unit": "days",
+        "aggregation": "min",
+        "severity": "high",
+        "tags": ["security"],
+        "notification_channels": ["slack_alerts", "email"],
+        "action": "renew_certificate"
+      }
+    ]
+  },
+  "dashboards": [
+    {
+      "id": "prod_overview",
+      "name": "Production Overview",
+      "description": "High-level view of production system health",
+      "widgets": [
+        {
+          "type": "timeseries",
+          "title": "Request Rate",
+          "query": "sum:trace.web.request.hits{env:prod}",
+          "display": "line"
+        },
+        {
+          "type": "timeseries",
+          "title": "Error Rate",
+          "query": "sum:trace.web.request.errors{env:prod}",
+          "display": "line"
+        },
+        {
+          "type": "gauge",
+          "title": "CPU Usage",
+          "query": "avg:system.cpu.user{env:prod}",
+          "min": 0,
+          "max": 100
+        },
+        {
+          "type": "gauge",
+          "title": "Memory Usage",
+          "query": "avg:system.mem.pct_usable{env:prod}",
+          "min": 0,
+          "max": 100
+        },
+        {
+          "type": "timeseries",
+          "title": "API Latency (p95)",
+          "query": "p95:trace.web.request.duration{env:prod}",
+          "display": "line"
+        },
+        {
+          "type": "timeseries",
+          "title": "Database Query Time",
+          "query": "p95:trace.postgres.query.duration{env:prod}",
+          "display": "area"
+        }
+      ]
+    },
+    {
+      "id": "prod_errors",
+      "name": "Error Analysis",
+      "description": "Detailed error tracking and debugging",
+      "widgets": [
+        {
+          "type": "table",
+          "title": "Top Errors",
+          "query": "select error_message, count() as error_count from errors group by error_message order by error_count desc limit 10"
+        },
+        {
+          "type": "heatmap",
+          "title": "Error Distribution Over Time",
+          "query": "sum:trace.errors{env:prod} by {error_type}"
+        },
+        {
+          "type": "table",
+          "title": "Recently Seen Errors",
+          "query": "select * from errors order by timestamp desc limit 20"
+        }
+      ]
+    },
+    {
+      "id": "prod_performance",
+      "name": "Performance Metrics",
+      "description": "Performance monitoring and optimization",
+      "widgets": [
+        {
+          "type": "timeseries",
+          "title": "Response Time Distribution",
+          "query": "trace.web.request.duration{env:prod}",
+          "display": "stacked_area"
+        },
+        {
+          "type": "heatmap",
+          "title": "Latency by Endpoint",
+          "query": "avg:trace.web.request.duration{env:prod} by {resource_name}"
+        },
+        {
+          "type": "timeseries",
+          "title": "Database Connection Pool",
+          "query": "avg:app.database.connections{env:prod}",
+          "display": "line"
+        },
+        {
+          "type": "timeseries",
+          "title": "Cache Hit Ratio",
+          "query": "avg:app.cache.hit_ratio{env:prod}",
+          "display": "line"
+        }
+      ]
+    },
+    {
+      "id": "prod_infrastructure",
+      "name": "Infrastructure Health",
+      "description": "System resources and infrastructure metrics",
+      "widgets": [
+        {
+          "type": "timeseries",
+          "title": "CPU Usage by Node",
+          "query": "avg:system.cpu.user{env:prod} by {host}"
+        },
+        {
+          "type": "timeseries",
+          "title": "Memory Usage by Node",
+          "query": "avg:system.mem.pct_usable{env:prod} by {host}"
+        },
+        {
+          "type": "timeseries",
+          "title": "Disk I/O",
+          "query": "avg:system.io.r_s{env:prod}, avg:system.io.w_s{env:prod}"
+        },
+        {
+          "type": "timeseries",
+          "title": "Network Throughput",
+          "query": "avg:system.net.bytes_sent{env:prod}, avg:system.net.bytes_rcvd{env:prod}"
+        }
+      ]
+    }
+  ],
+  "integrations": {
+    "aws": {
+      "enabled": true,
+      "account_id": "123456789012",
+      "role_arn": "arn:aws:iam::123456789012:role/DatadogIntegrationRole",
+      "metrics": {
+        "enabled": true,
+        "services": ["ec2", "rds", "alb", "elb", "s3", "cloudwatch"]
+      },
+      "logs": {
+        "enabled": true,
+        "forwarding": true
+      }
+    },
+    "kubernetes": {
+      "enabled": true,
+      "cluster_name": "prod-cluster-2026",
+      "container_monitoring": true,
+      "pod_monitoring": true,
+      "node_monitoring": true,
+      "event_collection": true
+    },
+    "postgresql": {
+      "enabled": true,
+      "host": "staging-db-4521.c9akciq32.us-east-1.rds.amazonaws.com",
+      "port": 5432,
+      "metrics": true,
+      "query_monitoring": true
+    },
+    "redis": {
+      "enabled": true,
+      "host": "redis-prod.us-east-1.elasticache.amazonaws.com",
+      "port": 6379,
+      "metrics": true
+    }
+  },
+  "log_pipelines": {
+    "enabled": true,
+    "pipelines": [
+      {
+        "name": "application_logs",
+        "filter": "source:unified-ai-testing",
+        "processors": [
+          {
+            "type": "service_remapper",
+            "sources": ["service"]
+          },
+          {
+            "type": "environment_remapper",
+            "sources": ["env"]
+          },
+          {
+            "type": "date_remapper",
+            "sources": ["timestamp"]
+          }
+        ]
+      },
+      {
+        "name": "error_logs",
+        "filter": "source:unified-ai-testing AND level:ERROR",
+        "processors": [
+          {
+            "type": "attribute_remapper",
+            "source_attributes": ["error_message"],
+            "target_attribute": "error.message"
+          },
+          {
+            "type": "attribute_remapper",
+            "source_attributes": ["stack_trace"],
+            "target_attribute": "error.stack"
+          }
+        ],
+        "archives": {
+          "retention_days": 90,
+          "storage": "s3"
+        }
+      },
+      {
+        "name": "database_logs",
+        "filter": "source:postgresql",
+        "processors": [
+          {
+            "type": "service_remapper",
+            "sources": ["service"]
+          }
+        ]
+      },
+      {
+        "name": "request_logs",
+        "filter": "source:unified-ai-testing AND service:api",
+        "processors": [
+          {
+            "type": "attribute_remapper",
+            "source_attributes": ["request_id"],
+            "target_attribute": "request.id"
+          },
+          {
+            "type": "attribute_remapper",
+            "source_attributes": ["response_time"],
+            "target_attribute": "response.time"
+          }
+        ]
+      }
+    ]
+  },
+  "service_monitoring": {
+    "enabled": true,
+    "service": "unified-ai-testing",
+    "monitors": [
+      {
+        "name": "Service Health Monitor",
+        "type": "service",
+        "enabled": true,
+        "targets": ["prod.unified-ai-testing.com"],
+        "metrics_to_track": [
+          "error_rate",
+          "latency",
+          "throughput",
+          "availability"
+        ]
+      },
+      {
+        "name": "Dependency Monitor",
+        "type": "dependency",
+        "enabled": true,
+        "dependencies": [
+          "postgresql",
+          "redis",
+          "alb"
+        ]
+      }
+    ]
+  },
+  "synthetics": {
+    "enabled": true,
+    "tests": [
+      {
+        "name": "Login Flow Test",
+        "type": "browser",
+        "url": "https://prod.unified-ai-testing.com",
+        "steps": [
+          {
+            "action": "go_to_url",
+            "url": "https://prod.unified-ai-testing.com/login"
+          },
+          {
+            "action": "type_text",
+            "selector": "input[name=email]",
+            "text": "test@example.com"
+          },
+          {
+            "action": "type_text",
+            "selector": "input[name=password]",
+            "text": "{{TEST_PASSWORD}}"
+          },
+          {
+            "action": "click",
+            "selector": "button[type=submit]"
+          },
+          {
+            "action": "wait_for_element",
+            "selector": ".dashboard"
+          }
+        ],
+        "frequency_minutes": 5,
+        "locations": ["us-east-1"]
+      },
+      {
+        "name": "API Endpoint Test",
+        "type": "api",
+        "request": {
+          "method": "GET",
+          "url": "https://prod.unified-ai-testing.com/api/health"
+        },
+        "assertions": [
+          {
+            "type": "status_code",
+            "operator": "equals",
+            "target": 200
+          }
+        ],
+        "frequency_minutes": 1,
+        "locations": ["us-east-1"]
+      }
+    ]
+  },
+  "incident_management": {
+    "enabled": true,
+    "auto_incident_creation": true,
+    "incident_severity_mapping": {
+      "critical": "SEV-1",
+      "high": "SEV-2",
+      "medium": "SEV-3",
+      "low": "SEV-4"
+    },
+    "post_mortem_automation": true,
+    "timeline_auto_fill": true
+  },
+  "cost_optimization": {
+    "enabled": true,
+    "retention_policies": {
+      "logs_retention_days": 90,
+      "metrics_retention_days": 400,
+      "traces_retention_days": 15,
+      "profiles_retention_days": 7
+    },
+    "sampling": {
+      "enabled": true,
+      "log_sample_rate": 1.0,
+      "trace_sample_rate": 1.0,
+      "apm_sample_rate": 1.0
+    }
+  },
+  "compliance": {
+    "enabled": true,
+    "standards": ["SOC2", "GDPR", "HIPAA"],
+    "pii_redaction": true,
+    "audit_logging": true,
+    "data_retention": "90 days"
+  },
+  "deployment": {
+    "status": "DEPLOYED",
+    "deployment_timestamp": "2026-07-02T11:05:00Z",
+    "version": "7.50.0",
+    "deployment_method": "helm_chart",
+    "helm_values": {
+      "chart": "datadog/datadog",
+      "namespace": "datadog",
+      "release_name": "datadog"
+    }
+  },
+  "status_summary": {
+    "agents_deployed": 5,
+    "agents_healthy": 5,
+    "data_collection_active": true,
+    "alerts_active": 10,
+    "dashboards_available": 4,
+    "health_checks_passing": 6,
+    "critical_alerts_triggered": 0,
+    "overall_status": "HEALTHY"
+  }
+}
