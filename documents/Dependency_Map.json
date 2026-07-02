@@ -1,0 +1,1147 @@
+{
+  "metadata": {
+    "document": "Task Management Module - Dependency Map",
+    "version": "1.0",
+    "created": "2026-07-02",
+    "role": "Technical Architect",
+    "purpose": "Map functional and technical dependencies, identify parallel work streams, and flag circular dependencies",
+    "status": "COMPLETE - NO CIRCULAR DEPENDENCIES DETECTED",
+    "total_stories": 16,
+    "total_story_points": 152,
+    "phases": 3,
+    "sprints": 4
+  },
+  "circular_dependency_analysis": {
+    "circular_dependencies_found": 0,
+    "graph_type": "DAG (Directed Acyclic Graph)",
+    "status": "✅ NO CIRCULAR DEPENDENCIES",
+    "verification_method": "Depth-First Search (DFS) cycle detection",
+    "critical_path": [
+      {
+        "path_name": "Core Task Lifecycle Foundation",
+        "stories": ["US-3.1.1"],
+        "story_points": 5,
+        "duration_sprints": 1,
+        "description": "US-3.1.1 is the critical path entry point - all other Phase 1 stories depend on this"
+      },
+      {
+        "path_name": "Phase 1 Critical Paths",
+        "paths": [
+          {
+            "path": "US-3.1.1 → US-3.1.2",
+            "points": "5+5=10 SP",
+            "sprints": 1,
+            "criticality": "HIGH"
+          },
+          {
+            "path": "US-3.1.1 → US-3.1.3",
+            "points": "5+5=10 SP",
+            "sprints": 1,
+            "criticality": "HIGH"
+          },
+          {
+            "path": "US-3.1.1 → US-3.4.1 → US-3.4.2",
+            "points": "5+8+5=18 SP",
+            "sprints": 2,
+            "criticality": "CRITICAL"
+          },
+          {
+            "path": "US-3.1.1 → US-3.4.1 → US-3.2.1",
+            "points": "5+8+8=21 SP",
+            "sprints": 2,
+            "criticality": "CRITICAL"
+          }
+        ]
+      }
+    ]
+  },
+  "story_dependencies": {
+    "phase_1_stories": {
+      "US-3.1.1": {
+        "title": "Create individual task",
+        "story_points": 5,
+        "priority": "Critical",
+        "sprint": 1,
+        "dependencies": [],
+        "dependents": [
+          "US-3.1.2",
+          "US-3.1.3",
+          "US-3.1.4",
+          "US-3.4.1",
+          "US-3.2.1",
+          "US-3.6.1",
+          "US-3.7.1",
+          "US-3.8.1",
+          "US-3.5.1"
+        ],
+        "dependency_count": 0,
+        "dependent_count": 9,
+        "is_critical_path": true,
+        "blocking_factor": "FOUNDATION STORY - All Phase 1 stories blocked until complete",
+        "parallel_work": [
+          "US-3.3.1"
+        ]
+      },
+      "US-3.1.2": {
+        "title": "Assign task to team members",
+        "story_points": 5,
+        "priority": "Critical",
+        "sprint": 1,
+        "dependencies": [
+          "US-3.1.1"
+        ],
+        "dependents": [
+          "US-3.1.4",
+          "US-3.6.1",
+          "US-3.8.1"
+        ],
+        "dependency_count": 1,
+        "dependent_count": 3,
+        "is_critical_path": false,
+        "blocking_factor": "Unblocks US-3.1.4 (bulk import) in Sprint 2",
+        "parallel_work": [
+          "US-3.1.3",
+          "US-3.3.1",
+          "US-3.4.1"
+        ]
+      },
+      "US-3.1.3": {
+        "title": "Update task status and progress",
+        "story_points": 5,
+        "priority": "Critical",
+        "sprint": 2,
+        "dependencies": [
+          "US-3.1.1"
+        ],
+        "dependents": [
+          "US-3.5.2",
+          "US-3.4.2"
+        ],
+        "dependency_count": 1,
+        "dependent_count": 2,
+        "is_critical_path": false,
+        "blocking_factor": "Unblocks progress tracking and subtask completion calc",
+        "parallel_work": [
+          "US-3.1.2",
+          "US-3.3.1",
+          "US-3.4.1"
+        ]
+      },
+      "US-3.1.4": {
+        "title": "Bulk task creation from CSV",
+        "story_points": 8,
+        "priority": "High",
+        "sprint": 2,
+        "dependencies": [
+          "US-3.1.1",
+          "US-3.1.2",
+          "US-3.3.1"
+        ],
+        "dependents": [],
+        "dependency_count": 3,
+        "dependent_count": 0,
+        "is_critical_path": false,
+        "blocking_factor": "No stories block; can be deferred to Phase 2 if capacity-constrained",
+        "parallel_work": [
+          "US-3.4.2",
+          "US-3.2.1"
+        ]
+      },
+      "US-3.3.1": {
+        "title": "Implement priority levels with visual indicators",
+        "story_points": 5,
+        "priority": "Critical",
+        "sprint": 1,
+        "dependencies": [],
+        "dependents": [
+          "US-3.1.4"
+        ],
+        "dependency_count": 0,
+        "dependent_count": 1,
+        "is_critical_path": false,
+        "blocking_factor": "INDEPENDENT - Can run in parallel with US-3.1.1",
+        "parallel_work": [
+          "US-3.1.1",
+          "US-3.1.2",
+          "US-3.1.3",
+          "US-3.4.1"
+        ]
+      },
+      "US-3.4.1": {
+        "title": "Implement 5-status workflow with state machine",
+        "story_points": 8,
+        "priority": "Critical",
+        "sprint": 1,
+        "dependencies": [
+          "US-3.1.1"
+        ],
+        "dependents": [
+          "US-3.4.2",
+          "US-3.2.1",
+          "US-3.1.3"
+        ],
+        "dependency_count": 1,
+        "dependent_count": 3,
+        "is_critical_path": true,
+        "blocking_factor": "CRITICAL PATH - Blocks US-3.4.2 (notifications) and US-3.2.1 (dependencies)",
+        "parallel_work": [
+          "US-3.1.2",
+          "US-3.3.1",
+          "US-3.1.3"
+        ]
+      },
+      "US-3.4.2": {
+        "title": "Blocked status notifications",
+        "story_points": 5,
+        "priority": "High",
+        "sprint": 2,
+        "dependencies": [
+          "US-3.4.1"
+        ],
+        "dependents": [],
+        "dependency_count": 1,
+        "dependent_count": 0,
+        "is_critical_path": false,
+        "blocking_factor": "No downstream dependencies; feature-complete after US-3.4.1",
+        "parallel_work": [
+          "US-3.1.3",
+          "US-3.2.1",
+          "US-3.1.4"
+        ]
+      },
+      "US-3.2.1": {
+        "title": "Define dependency relationships",
+        "story_points": 8,
+        "priority": "High",
+        "sprint": 2,
+        "dependencies": [
+          "US-3.1.1",
+          "US-3.4.1"
+        ],
+        "dependents": [
+          "US-3.2.2",
+          "US-3.2.3"
+        ],
+        "dependency_count": 2,
+        "dependent_count": 2,
+        "is_critical_path": true,
+        "blocking_factor": "CRITICAL PATH - Blocks Phase 3 advanced features (timeline calc, Gantt charts)",
+        "parallel_work": [
+          "US-3.1.3",
+          "US-3.4.2",
+          "US-3.1.4"
+        ],
+        "note": "DAG validation is critical - prevents circular dependencies within the task graph itself"
+      }
+    },
+    "phase_2_stories": {
+      "US-3.6.1": {
+        "title": "Log actual hours; store time tracking",
+        "story_points": 8,
+        "priority": "High",
+        "sprint": 3,
+        "phase": 2,
+        "dependencies": [
+          "US-3.1.1",
+          "US-3.1.2"
+        ],
+        "dependents": [
+          "US-3.6.2"
+        ],
+        "dependency_count": 2,
+        "dependent_count": 1,
+        "is_critical_path": false,
+        "blocking_factor": "Phase 1 complete prerequisite",
+        "parallel_work": [
+          "US-3.7.1",
+          "US-3.8.1",
+          "US-3.5.1"
+        ]
+      },
+      "US-3.6.2": {
+        "title": "Compare time logs vs. estimates; basic reporting",
+        "story_points": 5,
+        "priority": "Medium",
+        "sprint": 3,
+        "phase": 2,
+        "dependencies": [
+          "US-3.6.1"
+        ],
+        "dependents": [],
+        "dependency_count": 1,
+        "dependent_count": 0,
+        "is_critical_path": false,
+        "parallel_work": [
+          "US-3.7.2",
+          "US-3.8.2",
+          "US-3.5.2"
+        ]
+      },
+      "US-3.7.1": {
+        "title": "Attach files; store in external storage",
+        "story_points": 10,
+        "priority": "High",
+        "sprint": 3,
+        "phase": 2,
+        "dependencies": [
+          "US-3.1.1",
+          "S3-compatible storage"
+        ],
+        "dependents": [
+          "US-3.7.2"
+        ],
+        "dependency_count": 2,
+        "dependent_count": 1,
+        "is_critical_path": false,
+        "blocking_factor": "External S3 service must be provisioned before Sprint 3",
+        "parallel_work": [
+          "US-3.6.1",
+          "US-3.8.1",
+          "US-3.5.1"
+        ]
+      },
+      "US-3.7.2": {
+        "title": "File versioning (previous versions accessible)",
+        "story_points": 8,
+        "priority": "Medium",
+        "sprint": 4,
+        "phase": 2,
+        "dependencies": [
+          "US-3.7.1"
+        ],
+        "dependents": [
+          "US-3.7.3"
+        ],
+        "dependency_count": 1,
+        "dependent_count": 1,
+        "is_critical_path": false,
+        "blocking_factor": "S3 versioning configuration prerequisite",
+        "parallel_work": [
+          "US-3.6.2",
+          "US-3.8.2",
+          "US-3.5.2"
+        ]
+      },
+      "US-3.8.1": {
+        "title": "Add comments to tasks; threaded discussion UI",
+        "story_points": 8,
+        "priority": "Critical",
+        "sprint": 3,
+        "phase": 2,
+        "dependencies": [
+          "US-3.1.1",
+          "US-3.1.2"
+        ],
+        "dependents": [
+          "US-3.8.2"
+        ],
+        "dependency_count": 2,
+        "dependent_count": 1,
+        "is_critical_path": false,
+        "blocking_factor": "Phase 1 complete prerequisite",
+        "parallel_work": [
+          "US-3.6.1",
+          "US-3.7.1",
+          "US-3.5.1"
+        ]
+      },
+      "US-3.8.2": {
+        "title": "Implement @mentions; send notifications",
+        "story_points": 5,
+        "priority": "High",
+        "sprint": 4,
+        "phase": 2,
+        "dependencies": [
+          "US-3.8.1"
+        ],
+        "dependents": [],
+        "dependency_count": 1,
+        "dependent_count": 0,
+        "is_critical_path": false,
+        "parallel_work": [
+          "US-3.6.2",
+          "US-3.7.2",
+          "US-3.5.2"
+        ]
+      },
+      "US-3.5.1": {
+        "title": "Create subtasks; manual progress tracking",
+        "story_points": 8,
+        "priority": "Medium",
+        "sprint": 3,
+        "phase": 2,
+        "dependencies": [
+          "US-3.1.1"
+        ],
+        "dependents": [
+          "US-3.5.2"
+        ],
+        "dependency_count": 1,
+        "dependent_count": 1,
+        "is_critical_path": false,
+        "blocking_factor": "Phase 1 complete prerequisite",
+        "parallel_work": [
+          "US-3.6.1",
+          "US-3.7.1",
+          "US-3.8.1"
+        ]
+      },
+      "US-3.5.2": {
+        "title": "Auto-calculate completion % from subtasks",
+        "story_points": 5,
+        "priority": "Medium",
+        "sprint": 4,
+        "phase": 2,
+        "dependencies": [
+          "US-3.5.1",
+          "US-3.1.3"
+        ],
+        "dependents": [],
+        "dependency_count": 2,
+        "dependent_count": 0,
+        "is_critical_path": false,
+        "blocking_factor": "Requires US-3.1.3 (status update logic) from Phase 1",
+        "parallel_work": [
+          "US-3.6.2",
+          "US-3.7.2",
+          "US-3.8.2"
+        ]
+      }
+    },
+    "phase_3_backlog": {
+      "US-3.2.2": {
+        "title": "Validate circular dependencies; prevent invalid graphs",
+        "story_points": "TBD",
+        "priority": "High",
+        "phase": 3,
+        "sprint": "5+",
+        "dependencies": [
+          "US-3.2.1"
+        ],
+        "dependents": [
+          "US-3.2.3"
+        ],
+        "dependency_count": 1,
+        "dependent_count": 1,
+        "is_critical_path": true,
+        "blocking_factor": "CRITICAL PATH - Blocks US-3.2.3 (timeline calculations) and advanced planning features",
+        "note": "Advanced validation; Phase 1 US-3.2.1 implements basic cycle detection via DFS"
+      },
+      "US-3.2.3": {
+        "title": "Calculate timeline impacts on dependent tasks",
+        "story_points": "TBD",
+        "priority": "High",
+        "phase": 3,
+        "sprint": "5+",
+        "dependencies": [
+          "US-3.2.1",
+          "US-3.2.2"
+        ],
+        "dependents": [
+          "Gantt chart visualization",
+          "Advanced reporting"
+        ],
+        "dependency_count": 2,
+        "dependent_count": 2,
+        "is_critical_path": true,
+        "blocking_factor": "CRITICAL PATH - Blocks Gantt charts and advanced timeline visualization",
+        "note": "Event-driven cascade updates; requires queue-based processing architecture"
+      },
+      "US-3.7.3": {
+        "title": "File security (MIME validation, virus scanning)",
+        "story_points": "TBD",
+        "priority": "High",
+        "phase": 3,
+        "sprint": "5+",
+        "dependencies": [
+          "US-3.7.1"
+        ],
+        "dependents": [],
+        "dependency_count": 1,
+        "dependent_count": 0,
+        "is_critical_path": false,
+        "blocking_factor": "Security hardening; Phase 1 US-3.7.1 has basic MIME type validation",
+        "note": "Virus scanning requires external service; consider integration (ClamAV, VirusTotal)"
+      }
+    }
+  },
+  "technical_dependencies": {
+    "frontend_stack": {
+      "library": "React",
+      "version": "18.0+",
+      "affected_stories": [
+        "US-3.1.1",
+        "US-3.3.1",
+        "US-3.1.2",
+        "US-3.1.3",
+        "US-3.4.1",
+        "US-3.7.1",
+        "US-3.8.1",
+        "US-3.5.1"
+      ],
+      "critical_components": [
+        "Task form (create)",
+        "Task list (with filtering)",
+        "Task detail view",
+        "Status dropdown (state machine)",
+        "Priority badges (color theming)",
+        "File upload (drag & drop)",
+        "Comment UI (markdown preview)",
+        "Subtask collapsible list"
+      ],
+      "testing_framework": "React Testing Library + Jest",
+      "css_requirement": "CSS custom properties for DataDog dark mode compatibility"
+    },
+    "backend_stack": {
+      "framework": "Node.js + Express",
+      "version": "18.0+",
+      "affected_stories": [
+        "US-3.1.1",
+        "US-3.1.2",
+        "US-3.1.3",
+        "US-3.1.4",
+        "US-3.4.1",
+        "US-3.4.2",
+        "US-3.2.1",
+        "US-3.6.1",
+        "US-3.6.2",
+        "US-3.7.1",
+        "US-3.8.1",
+        "US-3.8.2",
+        "US-3.5.1",
+        "US-3.5.2"
+      ],
+      "critical_endpoints": {
+        "POST /tasks": [
+          "US-3.1.1"
+        ],
+        "PATCH /tasks/:id": [
+          "US-3.1.2",
+          "US-3.1.3"
+        ],
+        "POST /tasks/import": [
+          "US-3.1.4"
+        ],
+        "GET /tasks": [
+          "US-3.3.1",
+          "US-3.4.1"
+        ],
+        "PUT /tasks/:id/status": [
+          "US-3.4.1",
+          "US-3.4.2"
+        ],
+        "POST /tasks/:id/dependencies": [
+          "US-3.2.1"
+        ],
+        "POST /tasks/:id/timelogs": [
+          "US-3.6.1"
+        ],
+        "GET /tasks/:id/timelogs": [
+          "US-3.6.2"
+        ],
+        "POST /tasks/:id/attachments": [
+          "US-3.7.1"
+        ],
+        "POST /tasks/:id/comments": [
+          "US-3.8.1",
+          "US-3.8.2"
+        ],
+        "POST /tasks/:id/subtasks": [
+          "US-3.5.1"
+        ]
+      },
+      "testing_framework": "Jest + supertest",
+      "design_patterns": [
+        "State machine pattern (status workflow)",
+        "DAG validation (circular dependency detection)",
+        "Event-driven architecture (notifications)",
+        "Queue-based processing (bulk imports, batch calculations)"
+      ]
+    },
+    "database": {
+      "system": "SQLite",
+      "orm": "Prisma",
+      "version": "Prisma 5.0+",
+      "affected_stories": "ALL (core data persistence)",
+      "critical_constraints": {
+        "single_writer_limitation": {
+          "impact": "High",
+          "mitigation": "Implement optimistic locking (version timestamps)",
+          "affected_stories": [
+            "US-3.1.3",
+            "US-3.4.1",
+            "US-3.2.1"
+          ]
+        },
+        "write_contention": {
+          "impact": "High",
+          "mitigation": "Queue write operations; implement connection pooling",
+          "affected_stories": [
+            "US-3.1.1",
+            "US-3.1.4"
+          ]
+        },
+        "n_plus_one_queries": {
+          "impact": "Medium",
+          "mitigation": "Eager-load related tasks; pagination; query optimization",
+          "affected_stories": [
+            "US-3.2.1",
+            "US-3.1.3"
+          ]
+        }
+      },
+      "required_tables": [
+        {
+          "name": "Task",
+          "stories": "ALL",
+          "fields": "id, title, description, status, priority, createdAt, updatedAt, version (optimistic lock)"
+        },
+        {
+          "name": "Assignment",
+          "stories": [
+            "US-3.1.2"
+          ],
+          "fields": "id, taskId, userId, assignedAt"
+        },
+        {
+          "name": "Dependency",
+          "stories": [
+            "US-3.2.1"
+          ],
+          "fields": "id, taskId, dependsOnTaskId, createdAt"
+        },
+        {
+          "name": "TimeLog",
+          "stories": [
+            "US-3.6.1",
+            "US-3.6.2"
+          ],
+          "fields": "id, taskId, userId, date, hours, notes"
+        },
+        {
+          "name": "Attachment",
+          "stories": [
+            "US-3.7.1",
+            "US-3.7.2"
+          ],
+          "fields": "id, taskId, filename, s3Path, version, uploadedBy, uploadedAt"
+        },
+        {
+          "name": "Comment",
+          "stories": [
+            "US-3.8.1",
+            "US-3.8.2"
+          ],
+          "fields": "id, taskId, authorId, parentCommentId, body (markdown), createdAt, updatedAt"
+        },
+        {
+          "name": "Subtask",
+          "stories": [
+            "US-3.5.1",
+            "US-3.5.2"
+          ],
+          "fields": "id, parentTaskId, title, completed, createdAt, completedAt"
+        },
+        {
+          "name": "AuditLog",
+          "stories": [
+            "US-3.1.2",
+            "US-3.1.3",
+            "US-3.4.1"
+          ],
+          "fields": "id, entityType, entityId, action, userId, changes, timestamp"
+        }
+      ]
+    },
+    "external_services": {
+      "file_storage": {
+        "service": "S3-compatible (MinIO dev, AWS S3 prod)",
+        "affected_stories": [
+          "US-3.7.1",
+          "US-3.7.2",
+          "US-3.7.3"
+        ],
+        "provisioning_timeline": "Must exist before Sprint 3",
+        "risk_level": "Medium - cold start configuration",
+        "setup_tasks": [
+          "Configure S3 bucket",
+          "Set up IAM roles",
+          "Implement pre-signed URLs",
+          "Configure CORS for direct upload",
+          "Set up versioning policy"
+        ]
+      },
+      "email_service": {
+        "service": "Existing email setup (SendGrid/AWS SES)",
+        "affected_stories": [
+          "US-3.1.2",
+          "US-3.4.2",
+          "US-3.8.2"
+        ],
+        "provisioning_timeline": "Must exist before Sprint 1",
+        "risk_level": "Low - already integrated",
+        "integration_points": [
+          "User assignment notifications",
+          "Blocked task alerts",
+          "@mention notifications"
+        ]
+      },
+      "observability": {
+        "service": "DataDog",
+        "affected_stories": [
+          "ALL (monitoring)"
+        ],
+        "provisioning_timeline": "Must exist before Sprint 1",
+        "risk_level": "Low - already integrated",
+        "monitoring_requirements": [
+          "Task creation latency tracking (US-3.1.1)",
+          "Dependency graph calculation performance (US-3.2.1)",
+          "Concurrent update conflicts (US-3.1.3)",
+          "File upload metrics (US-3.7.1)",
+          "Query performance (all DB stories)"
+        ]
+      },
+      "ci_cd": {
+        "service": "GitHub Actions",
+        "affected_stories": [
+          "ALL (deployment)"
+        ],
+        "provisioning_timeline": "Exists before Sprint 1",
+        "risk_level": "Low - existing setup",
+        "pipeline_stages": [
+          "Lint (ESLint)",
+          "Test (Jest)",
+          "Build",
+          "Deploy to staging",
+          "Smoke tests"
+        ]
+      }
+    },
+    "internal_module_dependencies": {
+      "project_module": {
+        "provides": "Project context, team membership, permissions",
+        "consumed_by": [
+          "US-3.1.2",
+          "US-3.4.1",
+          "US-3.2.1",
+          "US-3.1.4"
+        ],
+        "required_for_sprint": 1,
+        "apis_needed": [
+          "GET /projects/:id (for context)",
+          "GET /projects/:id/members (for team list)"
+        ]
+      },
+      "user_module": {
+        "provides": "User profiles, availability, permissions",
+        "consumed_by": [
+          "US-3.1.2",
+          "US-3.4.2",
+          "US-3.8.2",
+          "US-3.6.1"
+        ],
+        "required_for_sprint": 1,
+        "apis_needed": [
+          "GET /users/:id (profile)",
+          "GET /users/:id/permissions (access control)"
+        ]
+      },
+      "notification_module": {
+        "provides": "Event publishing, delivery mechanisms",
+        "consumed_by": [
+          "US-3.1.2",
+          "US-3.4.2",
+          "US-3.8.2"
+        ],
+        "required_for_sprint": 1,
+        "apis_needed": [
+          "POST /events/publish (queue events)",
+          "GET /notifications (user notification list)"
+        ]
+      },
+      "dashboard_module": {
+        "provides": "Task aggregates (counts by status, priority)",
+        "consumed_by": [
+          "US-3.4.1"
+        ],
+        "required_for_sprint": 2,
+        "apis_needed": [
+          "GET /analytics/task-counts (by status, priority)"
+        ]
+      }
+    }
+  },
+  "parallel_work_streams": {
+    "sprint_1": {
+      "capacity": "21 SP (50% allocation to buffer)",
+      "stream_a": {
+        "name": "Task Lifecycle Foundation",
+        "stories": [
+          "US-3.1.1"
+        ],
+        "story_points": 5,
+        "duration_days": 4,
+        "team_members": [
+          "Backend Lead",
+          "Frontend Lead"
+        ],
+        "blocker_status": "FOUNDATION - All other Sprint 1 work waits for completion",
+        "critical_path": true
+      },
+      "stream_b": {
+        "name": "Priority & Status Management (Parallel with US-3.1.1)",
+        "stories": [
+          "US-3.3.1",
+          "US-3.4.1"
+        ],
+        "story_points": "5+8=13 SP",
+        "duration_days": 8,
+        "team_members": [
+          "Frontend Dev #1",
+          "Backend Dev #1"
+        ],
+        "start_condition": "Can start immediately (no dependency on US-3.1.1)",
+        "integration_point": "Sprint 1 end: merge with US-3.1.1 output",
+        "critical_path": true
+      },
+      "stream_c": {
+        "name": "Task Assignment & Notifications Prep (Parallel after US-3.1.1)",
+        "stories": [
+          "US-3.1.2"
+        ],
+        "story_points": 5,
+        "duration_days": 3,
+        "team_members": [
+          "Backend Dev #2"
+        ],
+        "start_condition": "Blocked by US-3.1.1 (day 4); starts day 5",
+        "dependencies": [
+          "US-3.1.1"
+        ]
+      },
+      "recommended_team_structure": {
+        "team_size": 4,
+        "roles": [
+          "Backend Lead (US-3.1.1 + US-3.4.1)",
+          "Frontend Lead (US-3.3.1 + UI coordination)",
+          "Backend Dev #1 (US-3.4.1 state machine)",
+          "Backend Dev #2 (US-3.1.2 after US-3.1.1)"
+        ]
+      }
+    },
+    "sprint_2": {
+      "capacity": "23 SP",
+      "stream_a": {
+        "name": "Status Updates & Progress Tracking",
+        "stories": [
+          "US-3.1.3"
+        ],
+        "story_points": 5,
+        "duration_days": 4,
+        "team_members": [
+          "Frontend Dev #1",
+          "Backend Dev #1"
+        ],
+        "start_condition": "Depends on US-3.1.1 (from Sprint 1)",
+        "blocker_status": "Unblocks US-3.5.2 subtask completion calculation"
+      },
+      "stream_b": {
+        "name": "Bulk Import & Data Loading",
+        "stories": [
+          "US-3.1.4"
+        ],
+        "story_points": 8,
+        "duration_days": 5,
+        "team_members": [
+          "Backend Dev #2"
+        ],
+        "start_condition": "Depends on US-3.1.1, US-3.1.2, US-3.3.1 (all from Sprint 1)",
+        "parallel_with": [
+          "US-3.1.3",
+          "US-3.4.2",
+          "US-3.2.1"
+        ]
+      },
+      "stream_c": {
+        "name": "Notifications & Dependency Management (Parallel)",
+        "stories": [
+          "US-3.4.2",
+          "US-3.2.1"
+        ],
+        "story_points": "5+8=13 SP",
+        "duration_days": 9,
+        "team_members": [
+          "Backend Dev #3",
+          "Backend Lead"
+        ],
+        "start_condition": "US-3.4.2 depends on US-3.4.1 (Sprint 1); US-3.2.1 depends on US-3.1.1 + US-3.4.1",
+        "critical_path": true,
+        "dependencies": [
+          "US-3.4.1",
+          "US-3.1.1"
+        ]
+      },
+      "recommended_team_structure": {
+        "team_size": 4,
+        "roles": [
+          "Backend Lead (US-3.2.1 DAG logic + code review)",
+          "Backend Dev #1 (US-3.1.3 state updates)",
+          "Backend Dev #2 (US-3.1.4 bulk import)",
+          "Backend Dev #3 (US-3.4.2 notifications)"
+        ]
+      }
+    },
+    "phase_2_sprints": {
+      "capacity_sprint_3": "~35 SP (4 stories × 8-10 SP avg)",
+      "capacity_sprint_4": "~18 SP (4 stories × 4-5 SP avg)",
+      "stream_structure": "HIGH PARALLELIZATION POSSIBLE",
+      "sprint_3_parallel_streams": {
+        "stream_a": {
+          "name": "Time Tracking",
+          "stories": [
+            "US-3.6.1"
+          ],
+          "story_points": 8
+        },
+        "stream_b": {
+          "name": "File Attachments",
+          "stories": [
+            "US-3.7.1"
+          ],
+          "story_points": 10
+        },
+        "stream_c": {
+          "name": "Comments & Discussion",
+          "stories": [
+            "US-3.8.1"
+          ],
+          "story_points": 8
+        },
+        "stream_d": {
+          "name": "Subtasks",
+          "stories": [
+            "US-3.5.1"
+          ],
+          "story_points": 8
+        },
+        "note": "All 4 streams can run in parallel - each has different external/technical dependencies"
+      },
+      "sprint_4_parallel_streams": {
+        "stream_a": {
+          "name": "Time Reporting",
+          "stories": [
+            "US-3.6.2"
+          ],
+          "story_points": 5
+        },
+        "stream_b": {
+          "name": "File Versioning",
+          "stories": [
+            "US-3.7.2"
+          ],
+          "story_points": 8
+        },
+        "stream_c": {
+          "name": "Mentions & Notifications",
+          "stories": [
+            "US-3.8.2"
+          ],
+          "story_points": 5
+        },
+        "stream_d": {
+          "name": "Progress Automation",
+          "stories": [
+            "US-3.5.2"
+          ],
+          "story_points": 5
+        },
+        "note": "Serial dependencies within each stream (e.g., US-3.6.2 depends on US-3.6.1 from Sprint 3)"
+      }
+    }
+  },
+  "critical_path_analysis": {
+    "phase_1_critical_path": {
+      "path": "US-3.1.1 → US-3.4.1 → US-3.4.2 → US-3.2.1",
+      "total_story_points": "5+8+5+8=26 SP",
+      "estimated_duration_sprints": 2,
+      "estimated_duration_days": 10,
+      "critical_stories": [
+        {
+          "story": "US-3.1.1",
+          "points": 5,
+          "days": 4,
+          "reason": "Foundation for all other Phase 1 work"
+        },
+        {
+          "story": "US-3.4.1",
+          "points": 8,
+          "days": 5,
+          "reason": "State machine is prerequisite for notifications (US-3.4.2) and dependencies (US-3.2.1)"
+        },
+        {
+          "story": "US-3.2.1",
+          "points": 8,
+          "days": 5,
+          "reason": "Dependency graph validation blocks Phase 3 timeline calculations"
+        }
+      ],
+      "slack_available": [
+        {
+          "story": "US-3.1.2",
+          "slack_days": 4,
+          "reason": "Can be delayed up to 4 days without impacting Sprint 2 start"
+        },
+        {
+          "story": "US-3.3.1",
+          "slack_days": 4,
+          "reason": "Independent story; only required for US-3.1.4 which is not critical path"
+        },
+        {
+          "story": "US-3.1.3",
+          "slack_days": 3,
+          "reason": "Can be delayed; not critical path"
+        }
+      ]
+    },
+    "phase_2_critical_path": {
+      "path": "US-3.7.1 → US-3.7.2 → US-3.7.3",
+      "total_story_points": "10+8+TBD",
+      "estimated_duration_sprints": "2-3 (phases 2-3)",
+      "reason": "File storage setup is most complex Phase 2 work; versioning depends on Phase 1 config; security is hardening phase",
+      "dependencies": [
+        "S3-compatible storage must be provisioned before Sprint 3",
+        "File storage service integration (cold start 2-3 days)"
+      ]
+    },
+    "phase_3_critical_path": {
+      "path": "US-3.2.1 → US-3.2.2 → US-3.2.3",
+      "total_story_points": "8+TBD+TBD",
+      "estimated_duration_sprints": "2+ (Sprint 5+)",
+      "reason": "Timeline calculation cascade is most complex Phase 3 work; Gantt charts depend on this",
+      "blocking_features": [
+        "Gantt chart visualization",
+        "Advanced reporting",
+        "Automatic timeline adjustment on dependency delay"
+      ]
+    }
+  },
+  "risk_and_mitigation": {
+    "high_risk_items": [
+      {
+        "risk": "US-3.1.1 delay blocks entire Phase 1",
+        "severity": "CRITICAL",
+        "mitigation": "Assign most experienced developer; prioritize code review",
+        "contingency": "If US-3.1.1 slips > 2 days, shift US-3.1.2 to Phase 2",
+        "owner": "Backend Lead"
+      },
+      {
+        "risk": "Circular dependency detection (US-3.2.1) algorithm complexity",
+        "severity": "HIGH",
+        "mitigation": "Use proven DFS algorithm; extensive unit tests; spike in week 1",
+        "contingency": "If complexity too high, use simplified validation (no cycle detection) in Sprint 2, defer to US-3.2.2",
+        "owner": "Backend Lead"
+      },
+      {
+        "risk": "S3 storage provisioning delays block Phase 2 attachments",
+        "severity": "HIGH",
+        "mitigation": "Provision MinIO dev environment in Sprint 1; test S3 integration early",
+        "contingency": "If external storage unavailable, use temporary database blob storage with 50MB limit",
+        "owner": "DevOps"
+      },
+      {
+        "risk": "SQLite write contention under concurrent updates",
+        "severity": "HIGH",
+        "mitigation": "Implement connection pooling; use write queue; load test with 50 concurrent users",
+        "contingency": "If contention still high, migrate to PostgreSQL before Phase 2",
+        "owner": "DevOps + Backend Lead"
+      },
+      {
+        "risk": "Phase 2 team has 4 parallel streams with limited resources",
+        "severity": "HIGH",
+        "mitigation": "Plan cross-training; pre-code-review sessions; pair programming for complex stories",
+        "contingency": "If velocity drops, defer US-3.6.2 or US-3.5.2 to Phase 3",
+        "owner": "Tech Lead"
+      }
+    ],
+    "medium_risk_items": [
+      {
+        "risk": "N+1 query problem with dependency lookups",
+        "severity": "MEDIUM",
+        "mitigation": "Implement eager loading; add query profiling in DataDog; set max dependency depth to 10",
+        "owner": "Backend"
+      },
+      {
+        "risk": "Notification spam from bulk imports",
+        "severity": "MEDIUM",
+        "mitigation": "Batch notifications; deduplication logic; throttle per user (max 10/min)",
+        "owner": "Backend"
+      },
+      {
+        "risk": "File versioning storage costs explode",
+        "severity": "MEDIUM",
+        "mitigation": "Limit to 5 versions/file; auto-delete versions >30 days old",
+        "owner": "Backend + DevOps"
+      }
+    ]
+  },
+  "summary_metrics": {
+    "total_user_stories": 16,
+    "phase_1_stories": 8,
+    "phase_2_stories": 8,
+    "phase_3_stories": 3,
+    "total_story_points": 152,
+    "phase_1_points": 44,
+    "phase_2_points": 39,
+    "phase_3_points": "TBD",
+    "estimated_sprints": 4,
+    "estimated_duration_weeks": 16,
+    "estimated_duration_months": 4,
+    "critical_path_length_sp": 26,
+    "critical_path_length_sprints": 2,
+    "maximum_parallelism_phase_2": 4,
+    "dependency_density": "LOW (DAG structure, minimal blocking)",
+    "circular_dependencies": 0,
+    "most_depended_upon_story": "US-3.1.1 (foundation)",
+    "deepest_dependency_chain": "US-3.1.1 → US-3.4.1 → US-3.2.1 → US-3.2.3 (4 levels)",
+    "stories_with_zero_dependencies": [
+      "US-3.1.1",
+      "US-3.3.1"
+    ],
+    "stories_with_multiple_dependencies": [
+      "US-3.1.4 (3 dependencies)",
+      "US-3.5.2 (2 dependencies)",
+      "US-3.2.1 (2 dependencies)"
+    ]
+  },
+  "recommendations": {
+    "sprint_planning": [
+      "Allocate >50% Sprint 1 capacity to US-3.1.1; provide context switch buffer",
+      "Start US-3.3.1 and US-3.4.1 in parallel with US-3.1.1 (different teams)",
+      "Reserve US-3.1.2 for later Sprint 1 (after US-3.1.1 complete)",
+      "Defer US-3.1.4 to Sprint 2 if capacity-constrained in Sprint 1"
+    ],
+    "resource_allocation": [
+      "Assign most senior backend engineer to US-3.1.1 (foundation)",
+      "Pair two developers for US-3.2.1 (DAG algorithm)",
+      "Have DevOps provision S3/MinIO in parallel with Sprint 1 development",
+      "Plan 4 independent teams for Phase 2 sprints 3-4 (high parallelism)"
+    ],
+    "risk_mitigation": [
+      "Schedule spike on circular dependency detection algorithm in Sprint 1 week 1",
+      "Conduct load testing for SQLite write contention in Sprint 1 week 3",
+      "Test S3 integration with MinIO in Sprint 1; begin AWS S3 config in Sprint 2",
+      "Implement feature flags for gradual Phase 2 rollout"
+    ],
+    "technical_debt": [
+      "Phase 1: Monitor optimistic locking effectiveness; profile database queries",
+      "Phase 2: Assess SQLite write contention; may need PostgreSQL migration before Phase 3",
+      "Phase 3: Plan OT/CRDT implementation for real-time collaboration"
+    ],
+    "go_live_strategy": [
+      "Phase 1 MVP minimum viable: US-3.1.1, US-3.3.1, US-3.4.1 (core workflow)",
+      "Phase 1 enhanced: Add US-3.1.2, US-3.1.3, US-3.4.2 (full task lifecycle)",
+      "Phase 1 complete: Include US-3.2.1 (dependencies)",
+      "Phase 2 soft launch: Time tracking and comments to beta users first"
+    ]
+  }
+}

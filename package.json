@@ -1,0 +1,39 @@
+{
+  "name": "unified-ai-testing",
+  "version": "1.0.0",
+  "description": "Unified AI Testing Platform - Configuration & Routing System",
+  "main": "config.manager.js",
+  "scripts": {
+    "start": "node example.usage.js",
+    "config:validate": "node config.manager.js",
+    "routing:test": "node routing.orchestrator.js",
+    "test": "jest --coverage --verbose",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "dev": "nodemon example.usage.js",
+    "diagnostic": "node diagnostic.js"
+  },
+  "keywords": [
+    "devops",
+    "configuration",
+    "routing",
+    "orchestration",
+    "jira",
+    "github",
+    "datadog"
+  ],
+  "author": "DevOps Engineer",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "eslint": "^8.43.0",
+    "nodemon": "^3.0.1"
+  }
+}

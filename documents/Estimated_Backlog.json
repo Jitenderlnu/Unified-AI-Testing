@@ -1,0 +1,833 @@
+{
+  "metadata": {
+    "document": "Task Management Module - Estimated Backlog",
+    "version": "1.0",
+    "created": "2026-07-02",
+    "role": "Agile Coach",
+    "methodology": "Fibonacci Sequence Estimation",
+    "fibonacci_sequence": [1, 2, 3, 5, 8, 13, 21, 34, 55, 89],
+    "estimation_approach": "Planning Poker consensus + complexity analysis + historical velocity",
+    "historical_velocity_baseline": {
+      "assumption": "Medium-experienced team (2-3 years together)",
+      "sprint_capacity": "25-30 SP",
+      "velocity_trend": "Stable; assume 28 SP/sprint",
+      "velocity_ramp_up": "+10% in Sprint 2 (team cohesion increase)"
+    },
+    "complexity_factors": {
+      "HIGH": "Algorithm complexity (DFS), external integrations (S3, Email), concurrent locking",
+      "MEDIUM": "Standard CRUD operations, state machines, validation logic",
+      "LOW": "UI components, simple filters, read-only features"
+    },
+    "status": "✅ ALL STORIES FIBONACCI-COMPLIANT"
+  },
+  "estimation_guidelines": {
+    "1_point": {
+      "description": "Trivial - minutes of work",
+      "examples": "Add a single CSS property, rename a variable",
+      "risk": "None",
+      "stories": []
+    },
+    "2_points": {
+      "description": "Very simple - < 2 hours",
+      "examples": "Single form field, simple getter/setter",
+      "risk": "Minimal",
+      "stories": []
+    },
+    "3_points": {
+      "description": "Simple - 2-4 hours",
+      "examples": "CRUD operation, form with validation",
+      "risk": "Low",
+      "stories": []
+    },
+    "5_points": {
+      "description": "Medium - 1 day (8 hours)",
+      "examples": "Component + API endpoint, simple UI with logic",
+      "risk": "Low-Medium",
+      "stories": [
+        "US-3.1.1",
+        "US-3.1.2",
+        "US-3.1.3",
+        "US-3.3.1",
+        "US-3.4.2",
+        "US-3.6.2",
+        "US-3.8.2",
+        "US-3.5.2"
+      ]
+    },
+    "8_points": {
+      "description": "Complex - 1.5-2 days (12-16 hours)",
+      "examples": "State machine, data validation, basic algorithm",
+      "risk": "Medium",
+      "stories": [
+        "US-3.1.4",
+        "US-3.4.1",
+        "US-3.2.1",
+        "US-3.6.1",
+        "US-3.7.2",
+        "US-3.8.1",
+        "US-3.5.1"
+      ]
+    },
+    "13_points": {
+      "description": "Very Complex - 2.5-3 days (20-24 hours)",
+      "examples": "Complex algorithm (DAG), major integration, performance optimization",
+      "risk": "High",
+      "stories": [
+        "US-3.7.1"
+      ]
+    },
+    "21_points": {
+      "description": "Extreme - 4+ days (unfit for single sprint)",
+      "examples": "Major refactoring, system redesign, complex feature set",
+      "risk": "Very High",
+      "stories": []
+    }
+  },
+  "phase_1_sprint_1_backlog": {
+    "sprint_name": "Core Task Lifecycle (Weeks 1-2)",
+    "sprint_capacity": "28 SP",
+    "stories": [
+      {
+        "rank": 1,
+        "id": "US-3.1.1",
+        "title": "Create individual task",
+        "user_story": "As a team member, I want to create a task with title, description, and metadata, So that I can break down project work into manageable items",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "Simple CRUD with Prisma transaction; requires basic form validation and API endpoint",
+        "dependencies": [],
+        "blockers": "FOUNDATION - No blockers; blocks 9 other stories",
+        "effort_breakdown": {
+          "frontend_ui": "1.5 hours (form component)",
+          "backend_api": "1.5 hours (POST /tasks endpoint)",
+          "database": "0.5 hours (Prisma setup)",
+          "testing": "1.5 hours (Jest tests)",
+          "documentation": "0.5 hours"
+        },
+        "total_estimated_hours": 5.5,
+        "risk_level": "LOW",
+        "technical_notes": "Use Prisma transaction for atomicity; validate title max 255 chars",
+        "acceptance_criteria_count": 6,
+        "sprint": 1
+      },
+      {
+        "rank": 2,
+        "id": "US-3.3.1",
+        "title": "Implement priority levels with visual indicators",
+        "user_story": "As a team member viewing my task list, I want to see priority levels with color/icon indicators, So that I can focus on high-priority work first",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "LOW",
+        "complexity_rationale": "Simple enum + UI styling; CSS custom properties; filtering/sorting logic is straightforward",
+        "dependencies": [],
+        "blockers": "INDEPENDENT - Can run in parallel with US-3.1.1",
+        "effort_breakdown": {
+          "frontend_ui": "2 hours (priority badges, styling)",
+          "backend_enum": "0.5 hours (Priority enum in schema)",
+          "filtering": "1.5 hours (filter/sort logic)",
+          "testing": "1 hour (Jest tests)"
+        },
+        "total_estimated_hours": 5,
+        "risk_level": "LOW",
+        "technical_notes": "Use CSS custom properties for DataDog dark mode compatibility",
+        "acceptance_criteria_count": 6,
+        "sprint": 1
+      },
+      {
+        "rank": 3,
+        "id": "US-3.4.1",
+        "title": "Implement 5-status workflow with state machine",
+        "user_story": "As a task assignee, I want to move tasks through a defined workflow, So that project managers have visibility of progress",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "HIGH",
+        "complexity_rationale": "State machine design requires careful transition logic; must prevent invalid transitions; audit trail needed",
+        "dependencies": ["US-3.1.1"],
+        "blockers": "CRITICAL PATH - Blocks US-3.4.2 (notifications) and US-3.2.1 (dependencies)",
+        "effort_breakdown": {
+          "design_pattern": "1 hour (state machine design)",
+          "backend_logic": "3 hours (enum + transition validation)",
+          "api_endpoint": "1 hour (PATCH /tasks/:id/status)",
+          "testing": "2 hours (state machine tests + race condition tests)",
+          "dashboard_counts": "1 hour (status aggregation)"
+        },
+        "total_estimated_hours": 8,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Implement as enum-based validation; prevent skip transitions; audit trail required",
+        "acceptance_criteria_count": 7,
+        "sprint": 1
+      },
+      {
+        "rank": 4,
+        "id": "US-3.1.2",
+        "title": "Assign task to team members",
+        "user_story": "As a project manager, I want to assign a task to one or more team members, So that team knows who is responsible for completion",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "Multi-select dropdown requires user module integration; notifications (queue-based) needed; audit log tracking",
+        "dependencies": ["US-3.1.1"],
+        "blockers": "Can start day 4 (after US-3.1.1)",
+        "effort_breakdown": {
+          "frontend_dropdown": "1.5 hours (multi-select UI)",
+          "backend_api": "1.5 hours (PATCH /tasks/:id/assign)",
+          "notification_queue": "1 hour (event publishing)",
+          "audit_logging": "0.5 hours (track who assigned)",
+          "testing": "0.5 hours (Jest tests)"
+        },
+        "total_estimated_hours": 5,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Use event-driven notifications (queue-based); integrate with User module",
+        "acceptance_criteria_count": 6,
+        "sprint": 1
+      }
+    ],
+    "total_story_points": "5+5+8+5 = 23 SP",
+    "total_hours": "23.5 hours",
+    "sprint_utilization": "23/28 = 82% (5 SP buffer for bugs/interruptions)",
+    "team_capacity_assumptions": {
+      "team_size": 4,
+      "developers": 4,
+      "sprint_days": 10,
+      "hours_per_developer_per_day": 6,
+      "total_available_hours": "4 devs × 10 days × 6 hours = 240 hours",
+      "utilization_rate": "23.5 / 240 = 9.8% (low; team has capacity)"
+    },
+    "velocity_notes": "Conservative Sprint 1; team establishing patterns",
+    "dependencies_ready": [
+      "US-3.1.1 must complete before US-3.1.2 starts (day 5)"
+    ]
+  },
+  "phase_1_sprint_2_backlog": {
+    "sprint_name": "Discovery & Dependencies (Weeks 3-4)",
+    "sprint_capacity": "30 SP (10% velocity increase from team cohesion)",
+    "stories": [
+      {
+        "rank": 1,
+        "id": "US-3.1.3",
+        "title": "Update task status and progress",
+        "user_story": "As a task assignee, I want to update task status and progress percentage, So that team visibility of task completion increases",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "State machine validation (from US-3.4.1); optimistic locking required; notifications on change",
+        "dependencies": ["US-3.1.1", "US-3.4.1"],
+        "blockers": "Unblocks US-3.5.2 subtask completion calculation",
+        "effort_breakdown": {
+          "frontend_ui": "1.5 hours (status dropdown, progress bar)",
+          "backend_validation": "1.5 hours (state machine check, optimistic lock)",
+          "notifications": "0.5 hours (notify watchers)",
+          "testing": "1.5 hours (state machine + race condition tests)"
+        },
+        "total_estimated_hours": 5,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Optimize with Prisma transaction; implement optimistic locking via version timestamp",
+        "acceptance_criteria_count": 6,
+        "sprint": 2,
+        "prerequisite_stories": ["US-3.4.1 from Sprint 1"]
+      },
+      {
+        "rank": 2,
+        "id": "US-3.4.2",
+        "title": "Blocked status notifications",
+        "user_story": "As a project manager, I want to be notified when a task is marked Blocked, So that I can unblock dependencies quickly",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "LOW",
+        "complexity_rationale": "Simple event handler + notification queue; reuses notification infrastructure from US-3.1.2",
+        "dependencies": ["US-3.4.1"],
+        "blockers": "No downstream dependencies",
+        "effort_breakdown": {
+          "event_handler": "1 hour (status=Blocked trigger)",
+          "notification_queuing": "1 hour (reuse existing queue)",
+          "dashboard_widget": "1 hour (blocked task count)",
+          "testing": "1 hour (Jest tests)",
+          "integration": "0.5 hours (DataDog alerts)"
+        },
+        "total_estimated_hours": 4.5,
+        "risk_level": "LOW",
+        "technical_notes": "Use pub/sub pattern; integrate with DataDog alerts",
+        "acceptance_criteria_count": 5,
+        "sprint": 2,
+        "prerequisite_stories": ["US-3.4.1 from Sprint 1"]
+      },
+      {
+        "rank": 3,
+        "id": "US-3.2.1",
+        "title": "Define dependency relationships",
+        "user_story": "As a project manager, I want to define that Task B depends on Task A, So that team understands task sequencing",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "HIGH",
+        "complexity_rationale": "DAG validation required; DFS cycle detection algorithm; visual task list changes; N+1 query risk on large graphs",
+        "dependencies": ["US-3.1.1", "US-3.4.1"],
+        "blockers": "CRITICAL PATH - Blocks Phase 3 timeline calculation (US-3.2.3) and Gantt charts",
+        "effort_breakdown": {
+          "data_model": "1 hour (Dependency table + foreign keys)",
+          "dfs_algorithm": "2 hours (cycle detection + testing)",
+          "api_endpoint": "1.5 hours (POST /tasks/:id/dependencies)",
+          "visual_rendering": "1.5 hours (indented task list)",
+          "performance_optimization": "1 hour (caching, query optimization)",
+          "testing": "1 hour (cycle detection tests + performance tests)"
+        },
+        "total_estimated_hours": 8,
+        "risk_level": "HIGH",
+        "technical_notes": "Use DFS for cycle detection; cache graph; set max depth = 10 to prevent pathological nesting",
+        "acceptance_criteria_count": 6,
+        "sprint": 2,
+        "prerequisite_stories": ["US-3.1.1 from Sprint 1", "US-3.4.1 from Sprint 1"],
+        "algorithm_risk": "DFS implementation complexity; recommend spike in Sprint 1 week 1"
+      },
+      {
+        "rank": 4,
+        "id": "US-3.1.4",
+        "title": "Bulk task creation from CSV",
+        "user_story": "As a project manager, I want to import multiple tasks from CSV at once, So that I can set up project from templates or exports",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "CSV parsing + validation; batch transaction; preview UI; rate limiting (100 tasks max)",
+        "dependencies": ["US-3.1.1", "US-3.1.2", "US-3.3.1"],
+        "blockers": "No downstream dependencies; can defer to Phase 2 if capacity-constrained",
+        "effort_breakdown": {
+          "frontend_upload": "1.5 hours (file upload UI)",
+          "csv_parsing": "1.5 hours (Papa Parse or similar)",
+          "validation": "1.5 hours (email, title, priority validation)",
+          "preview_ui": "1 hour (show validation errors)",
+          "batch_insert": "1.5 hours (Prisma transaction)",
+          "testing": "1 hour (CSV parser tests + transaction tests)"
+        },
+        "total_estimated_hours": 8,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Use streaming for large files; validate before transaction; implement rate limiting",
+        "acceptance_criteria_count": 6,
+        "sprint": 2,
+        "prerequisite_stories": ["US-3.1.1, US-3.1.2, US-3.3.1 from Sprint 1"]
+      }
+    ],
+    "total_story_points": "5+5+8+8 = 26 SP",
+    "total_hours": "25.5 hours",
+    "sprint_utilization": "26/30 = 87% (4 SP buffer)",
+    "team_capacity_assumptions": {
+      "velocity_increase": "+10% from Sprint 1 (team cohesion)",
+      "base_capacity": "28 SP",
+      "sprint_2_capacity": "28 × 1.1 = 30.8 SP ≈ 30 SP"
+    },
+    "velocity_notes": "Sprint 2 sees +10% velocity increase due to team cohesion; both US-3.2.1 and US-3.1.4 are complex but team is ready"
+  },
+  "phase_2_sprint_3_backlog": {
+    "sprint_name": "Enhanced Collaboration Part A (Weeks 5-6)",
+    "sprint_capacity": "32 SP (continued +10% velocity; stable high-velocity team)",
+    "stories": [
+      {
+        "rank": 1,
+        "id": "US-3.6.1",
+        "title": "Log actual hours; store time tracking",
+        "user_story": "As a task assignee, I want to log hours spent on a task, So that team can track actual effort vs. estimates",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "New data model (TimeLog); basic CRUD; permission checks; no complex algorithms",
+        "dependencies": ["US-3.1.1", "US-3.1.2"],
+        "blockers": "Phase 1 complete (prerequisite)",
+        "effort_breakdown": {
+          "data_model": "1 hour (TimeLog schema)",
+          "api_endpoints": "2 hours (POST/GET /tasks/:id/timelogs)",
+          "validation": "1 hour (negative hours, >24/day checks)",
+          "permissions": "1 hour (only assigned users + PM can view)",
+          "testing": "1.5 hours (validation + permission tests)"
+        },
+        "total_estimated_hours": 6.5,
+        "risk_level": "LOW",
+        "technical_notes": "Store as separate TimeLog entities; aggregate for dashboard in US-3.6.2",
+        "acceptance_criteria_count": 6,
+        "sprint": 3,
+        "prerequisite_stories": ["Phase 1 complete"],
+        "parallel_with": ["US-3.7.1", "US-3.8.1", "US-3.5.1"]
+      },
+      {
+        "rank": 2,
+        "id": "US-3.7.1",
+        "title": "Attach files; store in external storage",
+        "user_story": "As a task assignee, I want to attach relevant files to a task, So that all context is available without email",
+        "original_estimate": 10,
+        "fibonacci_estimate": 13,
+        "complexity": "HIGH",
+        "complexity_rationale": "S3 integration (cold start); file validation (MIME type, size); pre-signed URLs; rate limiting; error handling",
+        "dependencies": ["US-3.1.1", "S3-compatible storage"],
+        "blockers": "Requires S3/MinIO provisioning before Sprint 3 start",
+        "effort_breakdown": {
+          "s3_setup": "2 hours (SDK integration, pre-signed URL generation)",
+          "frontend_upload": "1.5 hours (drag & drop UI)",
+          "file_validation": "1.5 hours (MIME type, size, block executables)",
+          "metadata_storage": "1 hour (filename, uploader, date in DB)",
+          "permissions": "1 hour (delete own / PM delete any)",
+          "error_handling": "1 hour (upload failures, retries)",
+          "testing": "2 hours (S3 integration tests, file validation tests)"
+        },
+        "total_estimated_hours": 10,
+        "risk_level": "HIGH",
+        "technical_notes": "Use pre-signed URLs for direct S3 upload; implement rate limiting (5 uploads/min); S3 must be provisioned in Sprint 1",
+        "acceptance_criteria_count": 7,
+        "sprint": 3,
+        "prerequisite_stories": ["Phase 1 complete", "S3-compatible storage provisioned"],
+        "external_dependencies": "S3/MinIO service",
+        "parallel_with": ["US-3.6.1", "US-3.8.1", "US-3.5.1"],
+        "estimation_note": "Original estimate of 10 SP is not Fibonacci; upgraded to 13 SP for S3 integration complexity"
+      },
+      {
+        "rank": 3,
+        "id": "US-3.8.1",
+        "title": "Add comments to tasks; threaded discussion UI",
+        "user_story": "As a team member, I want to comment on tasks with support for nested replies, So that discussions stay within context",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "Comment model + one-level nesting; markdown parsing (markdown-it); XSS prevention",
+        "dependencies": ["US-3.1.1", "US-3.1.2"],
+        "blockers": "Phase 1 complete (prerequisite)",
+        "effort_breakdown": {
+          "data_model": "1 hour (Comment + parent relationship)",
+          "api_endpoints": "1.5 hours (POST/GET /tasks/:id/comments)",
+          "frontend_ui": "2 hours (comment form, markdown preview, reply UI)",
+          "markdown_parsing": "1 hour (markdown-it integration, sanitization)",
+          "edit_delete": "0.5 hours (5-min edit window, [deleted] marker)",
+          "testing": "1.5 hours (Jest tests + XSS tests)"
+        },
+        "total_estimated_hours": 7.5,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Use markdown-it for safe HTML rendering; prevent XSS with sanitization library",
+        "acceptance_criteria_count": 7,
+        "sprint": 3,
+        "prerequisite_stories": ["Phase 1 complete"],
+        "parallel_with": ["US-3.6.1", "US-3.7.1", "US-3.5.1"]
+      },
+      {
+        "rank": 4,
+        "id": "US-3.5.1",
+        "title": "Create subtasks; manual progress tracking",
+        "user_story": "As a task assignee, I want to create subtasks for complex work, So that I can track granular progress",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "Subtask model (parent-child); cascade delete logic; UI collapsible list; max 50 subtasks per task",
+        "dependencies": ["US-3.1.1"],
+        "blockers": "Phase 1 complete (prerequisite)",
+        "effort_breakdown": {
+          "data_model": "1 hour (Subtask schema with FK ON DELETE CASCADE)",
+          "api_endpoints": "1.5 hours (POST/GET/PATCH /tasks/:id/subtasks)",
+          "frontend_list": "1.5 hours (collapsible subtask list UI)",
+          "cascade_logic": "1 hour (delete parent → delete subtasks)",
+          "max_validation": "0.5 hours (50 subtasks per task limit)",
+          "testing": "1.5 hours (CRUD + cascade tests)"
+        },
+        "total_estimated_hours": 7,
+        "risk_level": "LOW",
+        "technical_notes": "Use foreign key with ON DELETE CASCADE; implement subtask count check",
+        "acceptance_criteria_count": 7,
+        "sprint": 3,
+        "prerequisite_stories": ["Phase 1 complete"],
+        "parallel_with": ["US-3.6.1", "US-3.7.1", "US-3.8.1"]
+      }
+    ],
+    "total_story_points": "8+13+8+8 = 37 SP",
+    "total_hours": "31 hours",
+    "sprint_utilization": "37/32 = 116% (OVER CAPACITY)",
+    "capacity_warning": "⚠️ Sprint 3 backlog exceeds 32 SP capacity by 5 SP. Recommend moving US-3.7.1 (13 SP) to Sprint 4 if team velocity doesn't sustain +10%",
+    "team_capacity_assumptions": {
+      "velocity_stability": "Continue +10% from Sprint 2",
+      "capacity": "30 × 1.1 = 33 SP rounded to 32 SP"
+    },
+    "velocity_notes": "High parallelization in Sprint 3; 4 independent streams can run concurrently with different teams",
+    "contingency_plan": "If team can't sustain 37 SP, defer US-3.7.1 to Sprint 4 (reduces to 24 SP in Sprint 3, within capacity)"
+  },
+  "phase_2_sprint_4_backlog": {
+    "sprint_name": "Enhanced Collaboration Part B (Weeks 7-8)",
+    "sprint_capacity": "32 SP (stable velocity)",
+    "stories": [
+      {
+        "rank": 1,
+        "id": "US-3.6.2",
+        "title": "Compare time logs vs. estimates; basic reporting",
+        "user_story": "As a project manager, I want to see actual hours vs. estimated hours, So that I can improve estimation accuracy",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "LOW",
+        "complexity_rationale": "Aggregate queries (Prisma groupBy); simple dashboard widget; CSV export (straightforward)",
+        "dependencies": ["US-3.6.1"],
+        "blockers": "No downstream dependencies",
+        "effort_breakdown": {
+          "query_logic": "1 hour (calculate variance, aggregates)",
+          "dashboard_widget": "1.5 hours (display estimated vs. logged)",
+          "csv_export": "0.5 hours (simple export logic)",
+          "testing": "1 hour (Jest tests for calculations)"
+        },
+        "total_estimated_hours": 4,
+        "risk_level": "LOW",
+        "technical_notes": "Use Prisma groupBy for aggregations; no real-time time tracking",
+        "acceptance_criteria_count": 5,
+        "sprint": 4,
+        "prerequisite_stories": ["US-3.6.1 from Sprint 3"]
+      },
+      {
+        "rank": 2,
+        "id": "US-3.7.2",
+        "title": "File versioning (previous versions accessible)",
+        "user_story": "As a task assignee, I want to see previous versions of an attachment, So that I can revert or compare changes",
+        "original_estimate": 8,
+        "fibonacci_estimate": 8,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "S3 versioning API; version history tracking; cleanup job for old versions; DB schema updates",
+        "dependencies": ["US-3.7.1"],
+        "blockers": "Depends on US-3.7.1 (Sprint 3 story)",
+        "effort_breakdown": {
+          "s3_versioning": "1.5 hours (S3 object versioning config)",
+          "db_schema": "0.5 hours (version number, uploader, date)",
+          "api_endpoints": "1.5 hours (GET /attachments/versions, download previous)",
+          "cleanup_job": "1 hour (cron job to delete versions >30 days old)",
+          "testing": "1.5 hours (version management tests)"
+        },
+        "total_estimated_hours": 6,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Use S3 object versioning; implement cleanup job (cron, runs nightly); max 5 versions per file",
+        "acceptance_criteria_count": 5,
+        "sprint": 4,
+        "prerequisite_stories": ["US-3.7.1 from Sprint 3"]
+      },
+      {
+        "rank": 3,
+        "id": "US-3.8.2",
+        "title": "Implement @mentions; send notifications",
+        "user_story": "As a commenter, I want to @mention team members, So that they are notified about discussions",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "LOW",
+        "complexity_rationale": "Mention parsing (regex); autocomplete dropdown; reuses notification queue from Phase 1",
+        "dependencies": ["US-3.8.1"],
+        "blockers": "No downstream dependencies",
+        "effort_breakdown": {
+          "regex_parsing": "0.5 hours (detect @mentions in comment body)",
+          "autocomplete": "1.5 hours (dropdown with project members)",
+          "notification_trigger": "1 hour (reuse queue from US-3.1.2)",
+          "deduplication": "0.5 hours (mention once per comment)",
+          "testing": "1 hour (mention parsing + notification tests)"
+        },
+        "total_estimated_hours": 4.5,
+        "risk_level": "LOW",
+        "technical_notes": "Use regex for mention detection; debounce autocomplete; deduplicate mentions",
+        "acceptance_criteria_count": 5,
+        "sprint": 4,
+        "prerequisite_stories": ["US-3.8.1 from Sprint 3"]
+      },
+      {
+        "rank": 4,
+        "id": "US-3.5.2",
+        "title": "Auto-calculate completion % from subtasks",
+        "user_story": "As a project manager, I want task progress to auto-update when subtasks complete, So that parent task progress reflects child progress",
+        "original_estimate": 5,
+        "fibonacci_estimate": 5,
+        "complexity": "LOW",
+        "complexity_rationale": "Simple percentage calculation; batch cron job (runs every 5 min); eventual consistency (within 1 min)",
+        "dependencies": ["US-3.5.1", "US-3.1.3"],
+        "blockers": "Depends on US-3.5.1 (Sprint 3) and US-3.1.3 (Sprint 2)",
+        "effort_breakdown": {
+          "calculation_logic": "0.5 hours (completed / total formula)",
+          "cron_job": "1 hour (scheduled batch update)",
+          "eventual_consistency": "0.5 hours (document 1-min SLA)",
+          "testing": "1 hour (percentage calculation tests + batch job tests)"
+        },
+        "total_estimated_hours": 3,
+        "risk_level": "LOW",
+        "technical_notes": "Implement as scheduled job (cron, runs every 5 min); eventual consistent (update within 1 min)",
+        "acceptance_criteria_count": 5,
+        "sprint": 4,
+        "prerequisite_stories": ["US-3.5.1 from Sprint 3", "US-3.1.3 from Sprint 2"]
+      },
+      {
+        "rank": 5,
+        "id": "US-3.7.1",
+        "title": "Attach files; store in external storage",
+        "user_story": "As a task assignee, I want to attach relevant files to a task, So that all context is available without email",
+        "original_estimate": 13,
+        "fibonacci_estimate": 13,
+        "complexity": "HIGH",
+        "complexity_rationale": "S3 integration; file validation; pre-signed URLs; rate limiting (deferred from Sprint 3 if over capacity)",
+        "dependencies": ["US-3.1.1", "S3-compatible storage"],
+        "blockers": "Contingency story: move here from Sprint 3 if capacity-constrained",
+        "effort_breakdown": {
+          "s3_setup": "2 hours",
+          "frontend_upload": "1.5 hours",
+          "file_validation": "1.5 hours",
+          "metadata_storage": "1 hour",
+          "permissions": "1 hour",
+          "error_handling": "1 hour",
+          "testing": "2 hours"
+        },
+        "total_estimated_hours": 10,
+        "risk_level": "HIGH",
+        "technical_notes": "Contingency story",
+        "acceptance_criteria_count": 7,
+        "sprint": "4 (if needed)",
+        "contingency_note": "Move from Sprint 3 if sprint 3 velocity can't sustain 37 SP"
+      }
+    ],
+    "total_story_points": "5+8+5+5 = 23 SP (without contingency)",
+    "total_story_points_with_contingency": "23+13 = 36 SP (if US-3.7.1 moves from Sprint 3)",
+    "total_hours": "16.5 hours (without contingency)",
+    "sprint_utilization": "23/32 = 72% (without contingency); 36/32 = 113% (with contingency)",
+    "team_capacity_assumptions": {
+      "velocity_stability": "Continue stable at 32 SP"
+    },
+    "velocity_notes": "Sprint 4 is lighter (23 SP) if Sprint 3 completes on time; can absorb US-3.7.1 contingency if needed",
+    "contingency_plan": "If Sprint 3 velocity drops below 32 SP, move US-3.7.1 (13 SP) to Sprint 4"
+  },
+  "phase_3_backlog": {
+    "sprint_name": "Advanced Features (Sprint 5+)",
+    "sprint_capacity": "TBD (depends on Phase 2 success)",
+    "stories": [
+      {
+        "rank": 1,
+        "id": "US-3.2.2",
+        "title": "Validate circular dependencies; prevent invalid graphs",
+        "user_story": "As a project manager, I want validation to prevent circular task dependencies, So that task graphs remain valid DAGs",
+        "original_estimate": "TBD",
+        "fibonacci_estimate": 8,
+        "complexity": "MEDIUM",
+        "complexity_rationale": "Advanced cycle detection; likely using existing US-3.2.1 DFS as foundation; additional edge case handling",
+        "dependencies": ["US-3.2.1"],
+        "blockers": "Blocks US-3.2.3 (timeline calculation)",
+        "effort_breakdown": {
+          "enhanced_validation": "2 hours (edge cases, transitive dependency checks)",
+          "error_messages": "1 hour (clear feedback to user on cycle detection)",
+          "performance_monitoring": "1 hour (ensure validation <500ms for large graphs)",
+          "testing": "2 hours (edge case tests)"
+        },
+        "total_estimated_hours": 6,
+        "risk_level": "MEDIUM",
+        "technical_notes": "Build on top of US-3.2.1 DFS algorithm; handle transitive dependency chains",
+        "acceptance_criteria_count": "TBD",
+        "sprint": "5+"
+      },
+      {
+        "rank": 2,
+        "id": "US-3.2.3",
+        "title": "Calculate timeline impacts on dependent tasks",
+        "user_story": "As a project manager, I want to see how task delays impact dependent tasks, So that I can understand timeline cascade effects",
+        "original_estimate": "TBD",
+        "fibonacci_estimate": 13,
+        "complexity": "HIGH",
+        "complexity_rationale": "Complex cascade logic; event-driven updates; queue-based processing; must handle transitive dependency chains",
+        "dependencies": ["US-3.2.1", "US-3.2.2"],
+        "blockers": "CRITICAL PATH - Blocks Gantt chart visualization and advanced reporting",
+        "effort_breakdown": {
+          "cascade_algorithm": "3 hours (compute timeline impact)",
+          "event_driven_architecture": "2 hours (queue-based async processing)",
+          "transaction_management": "1.5 hours (atomic updates across dependent tasks)",
+          "performance_optimization": "1.5 hours (cache results, avoid recalculation)",
+          "testing": "2 hours (cascade impact tests, performance tests)"
+        },
+        "total_estimated_hours": 10,
+        "risk_level": "HIGH",
+        "technical_notes": "Event-driven cascade updates; queue-based processing; NOT real-time (eventual consistent within 5 min)",
+        "acceptance_criteria_count": "TBD",
+        "sprint": "5+",
+        "algorithm_risk": "Cascade recalculation is non-trivial; recommend spike in Phase 2"
+      },
+      {
+        "rank": 3,
+        "id": "US-3.7.3",
+        "title": "File security (MIME validation, virus scanning)",
+        "user_story": "As a team member, I want uploaded files to be scanned for malware, So that task attachments are safe",
+        "original_estimate": "TBD",
+        "fibonacci_estimate": 8,
+        "complexity": "HIGH",
+        "complexity_rationale": "External virus scanning service integration (ClamAV or VirusTotal); async scanning workflow; quarantine/block logic",
+        "dependencies": ["US-3.7.1"],
+        "blockers": "No downstream dependencies; security hardening feature",
+        "effort_breakdown": {
+          "virus_scanning_integration": "2 hours (ClamAV or VirusTotal API)",
+          "async_scanning_workflow": "1.5 hours (scan after upload, notify user)",
+          "quarantine_logic": "1 hour (block upload if virus detected)",
+          "error_handling": "1 hour (handle scanning service down)",
+          "testing": "1.5 hours (scanning workflow tests)"
+        },
+        "total_estimated_hours": 7,
+        "risk_level": "HIGH",
+        "technical_notes": "Phase 1 US-3.7.1 has basic MIME type validation; this adds advanced security",
+        "acceptance_criteria_count": "TBD",
+        "sprint": "5+",
+        "external_dependencies": "Virus scanning service (ClamAV, VirusTotal, etc.)"
+      }
+    ],
+    "total_story_points": "8+13+8 = 29 SP (estimated)",
+    "total_hours": "23 hours (estimated)",
+    "sprint_utilization": "29/32 = 91% (estimated)",
+    "team_capacity_assumptions": {
+      "dependency": "Phase 2 completion and team velocity stability"
+    },
+    "velocity_notes": "Phase 3 assumes stable 32 SP/sprint velocity continuing from Phase 2",
+    "estimation_note": "Phase 3 stories are unsized in BRD; Agile Coach estimated based on complexity and Phase 2 patterns"
+  },
+  "velocity_analysis": {
+    "baseline_assumption": {
+      "team_experience": "Medium (2-3 years together)",
+      "sprint_capacity": "25-30 SP initially",
+      "assumed_velocity": "28 SP/sprint"
+    },
+    "velocity_progression": [
+      {
+        "sprint": 1,
+        "planned": 23,
+        "velocity_factor": 0.82,
+        "notes": "Conservative Sprint 1; team establishing patterns"
+      },
+      {
+        "sprint": 2,
+        "planned": 26,
+        "velocity_factor": 0.93,
+        "notes": "+10% increase from team cohesion (28 → 30.8 SP)"
+      },
+      {
+        "sprint": 3,
+        "planned": 37,
+        "velocity_factor": 1.16,
+        "notes": "HIGH PARALLELIZATION; 4 independent streams; may exceed capacity; contingency needed"
+      },
+      {
+        "sprint": 4,
+        "planned": 23,
+        "velocity_factor": 0.72,
+        "notes": "Lighter sprint (dependencies from Sprint 3); can absorb contingency"
+      },
+      {
+        "sprint": "5+",
+        "planned": 29,
+        "velocity_factor": 0.91,
+        "notes": "Phase 3; estimated based on Phase 2 patterns; assumes stable 32 SP/sprint"
+      }
+    ],
+    "cumulative_throughput": {
+      "phase_1_2_sprints": "23+26 = 49 SP",
+      "phase_2_2_sprints": "37+23 = 60 SP",
+      "phase_3_estimated": "29 SP",
+      "total_delivery": "138 SP (17 user stories)"
+    },
+    "delivery_timeline": {
+      "phase_1": "2 sprints (4 weeks) - End of Week 4",
+      "phase_2": "2 sprints (4 weeks) - End of Week 8",
+      "phase_3": "1+ sprints (2+ weeks) - Week 10+",
+      "total_timeline": "10+ weeks (2.5+ months)"
+    }
+  },
+  "estimation_quality": {
+    "fibonacci_compliance": "✅ 100% - All stories use Fibonacci sequence (1,2,3,5,8,13,21)",
+    "estimation_methods_used": [
+      "Planning Poker consensus (assumed)",
+      "Complexity analysis (HIGH/MEDIUM/LOW)",
+      "Historical velocity trending",
+      "Effort breakdown (hours per story)",
+      "Risk adjustment (high-risk stories sized up)"
+    ],
+    "estimates_verified_by": [
+      "Effort-to-points mapping (5-6 hours = 5 points, 8 hours = 8 points, etc.)",
+      "Dependency consideration (blocking stories sized realistically)",
+      "Risk factors (complexity, external dependencies, algorithm difficulty)"
+    ],
+    "confidence_levels": {
+      "phase_1": "HIGH (90%+ confidence; well-understood stories)",
+      "phase_2": "MEDIUM (70% confidence; external service integrations add uncertainty)",
+      "phase_3": "MEDIUM (65% confidence; unsized stories estimated from Phase 2 patterns)"
+    }
+  },
+  "retrospective_velocity_tracking": {
+    "sprint_1_actuals": "TBD (post-sprint review)",
+    "sprint_2_actuals": "TBD (post-sprint review)",
+    "velocity_adjustment_trigger": {
+      "condition": "If Sprint 1-2 actuals vary >15% from plan",
+      "action": "Re-estimate Phase 2 stories; adjust Sprint 3 capacity"
+    }
+  },
+  "backlog_summary": {
+    "total_stories": 17,
+    "phase_1_stories": 8,
+    "phase_2_stories": 8,
+    "phase_3_stories": 3,
+    "total_estimated_story_points": 152,
+    "breakdown_by_phase": {
+      "phase_1": {
+        "stories": 8,
+        "story_points": 44,
+        "sprints": 2,
+        "timeline_weeks": 4
+      },
+      "phase_2": {
+        "stories": 8,
+        "story_points": 39,
+        "sprints": 2,
+        "timeline_weeks": 4
+      },
+      "phase_3": {
+        "stories": 3,
+        "story_points": 29,
+        "sprints": "1+",
+        "timeline_weeks": "2+"
+      }
+    },
+    "breakdown_by_complexity": {
+      "LOW_complexity": {
+        "count": 4,
+        "stories": ["US-3.4.2", "US-3.6.2", "US-3.8.2", "US-3.5.2"],
+        "total_points": 20
+      },
+      "MEDIUM_complexity": {
+        "count": 9,
+        "stories": ["US-3.1.1", "US-3.1.2", "US-3.1.3", "US-3.1.4", "US-3.3.1", "US-3.6.1", "US-3.8.1", "US-3.5.1", "US-3.2.2"],
+        "total_points": 65
+      },
+      "HIGH_complexity": {
+        "count": 4,
+        "stories": ["US-3.4.1", "US-3.2.1", "US-3.7.1", "US-3.2.3", "US-3.7.3"],
+        "total_points": 67
+      }
+    },
+    "breakdown_by_fibonacci_value": {
+      "3_points": { "count": 0, "stories": [], "total_points": 0 },
+      "5_points": { "count": 8, "stories": ["US-3.1.1", "US-3.1.2", "US-3.1.3", "US-3.3.1", "US-3.4.2", "US-3.6.2", "US-3.8.2", "US-3.5.2"], "total_points": 40 },
+      "8_points": { "count": 7, "stories": ["US-3.1.4", "US-3.4.1", "US-3.2.1", "US-3.6.1", "US-3.7.2", "US-3.8.1", "US-3.5.1", "US-3.2.2", "US-3.7.3"], "total_points": 72 },
+      "13_points": { "count": 2, "stories": ["US-3.7.1", "US-3.2.3"], "total_points": 26 }
+    }
+  },
+  "recommendations_from_agile_coach": {
+    "planning_recommendations": [
+      "Sprint 1-2 (Phase 1): Conservative planning with velocity ramp-up; allocate best developers to US-3.1.1 (foundation)",
+      "Sprint 3: HIGH PARALLELIZATION with contingency plan; if Sprint 1-2 velocity < 28 SP average, defer US-3.7.1 to Sprint 4",
+      "Sprint 4: Lighter sprint (23 SP) allows buffer for contingencies or process improvements",
+      "Phase 3: Estimate based on actual Phase 2 velocity; consider velocity stability post-Phase 2"
+    ],
+    "risk_management": [
+      "HIGH RISK: US-3.2.1 (DAG algorithm) and US-3.2.3 (cascade logic) - Schedule spikes in Sprint 1 and Phase 2 respectively",
+      "HIGH RISK: US-3.7.1 (S3 integration) - Provision MinIO in Sprint 1; test integration early",
+      "HIGH RISK: SQLite write contention - Load test by Sprint 1 week 3; have PostgreSQL migration contingency ready",
+      "MEDIUM RISK: Sprint 3 over-capacity - Build contingency buffer; be ready to defer US-3.7.1 if needed"
+    ],
+    "velocity_management": [
+      "Assume +10% velocity growth from Sprint 1 to Sprint 2 (team cohesion)",
+      "Plan for stable velocity in Phase 2 sprints",
+      "Monitor actual vs. planned velocity; adjust Phase 3 estimates if variance > 15%",
+      "Plan retrospectives after Sprint 1 and Sprint 2 to refine estimation accuracy"
+    ],
+    "resource_allocation": [
+      "Sprint 1: 4 developers (Backend Lead on US-3.1.1, Frontend Lead on US-3.3.1, Backend on US-3.4.1 and US-3.1.2)",
+      "Sprint 2: Same team; add DevOps for S3/MinIO setup",
+      "Sprint 3-4: Expand to 5-6 developers for 4 parallel streams; pair programming on high-risk stories",
+      "Phase 3: Reduce to 3-4 developers; focus on complex algorithm stories (US-3.2.3)"
+    ],
+    "quality_assurance": [
+      "Target >80% Jest coverage on all stories",
+      "Definition of Done: code review, tests, manual QA, DataDog integration",
+      "Performance testing: US-3.2.1 (1000 task graphs), US-3.7.1 (100MB uploads), US-3.1.4 (1000 bulk imports)",
+      "Security audit: before Phase 1 go-live for optimistic locking, user permissions, XSS prevention"
+    ]
+  }
+}
