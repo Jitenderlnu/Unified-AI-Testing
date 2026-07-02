@@ -1,0 +1,55 @@
+{
+  "name": "UnifiedAITesting",
+  "tables": [
+    {
+      "name": "users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "primaryKey": true
+        },
+        {
+          "name": "email",
+          "type": "TEXT",
+          "unique": true
+        },
+        {
+          "name": "password_hash",
+          "type": "TEXT"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP"
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "foreignKey": "users(id)"
+        },
+        {
+          "name": "name",
+          "type": "TEXT"
+        },
+        {
+          "name": "description",
+          "type": "TEXT"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP"
+        }
+      ]
+    }
+  ]
+}

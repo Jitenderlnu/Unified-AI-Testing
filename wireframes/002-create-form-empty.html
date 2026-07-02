@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN-1 Wireframe: Create Form - Empty State</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #212121;
+        }
+        .wireframe-label {
+            background: #e8f5e9;
+            border: 2px dashed #388e3c;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+        .form-container {
+            max-width: 600px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .form-header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .form-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #212121;
+        }
+        .form-group label .required {
+            color: #d32f2f;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+        .form-group input::placeholder {
+            color: #bdbdbd;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .form-actions {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-primary:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: white;
+            color: #1976d2;
+            border: 1px solid #1976d2;
+        }
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+        .helper-text {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 4px;
+        }
+        .annotation {
+            font-size: 12px;
+            color: #666;
+            background: #fff3e0;
+            padding: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #f57c00;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">📝 Wireframe: Create Form - Empty State (002)</div>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h1>📋 Create New Task</h1>
+            <button class="btn-close">&times;</button>
+        </div>
+
+        <form class="form-body">
+            <div class="form-group">
+                <label>Title <span class="required">*</span></label>
+                <input type="text" placeholder="Enter task title (max 255 characters)" maxlength="255">
+                <div class="char-count">0/255</div>
+                <div class="helper-text">This will be the main title of your task</div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea placeholder="Add detailed description (optional, supports markdown)"></textarea>
+                <div class="helper-text">Use **bold**, _italic_, and `code` formatting</div>
+            </div>
+
+            <div class="form-group">
+                <label>Due Date (optional)</label>
+                <input type="date">
+                <div class="helper-text">Select a future date for when this task should be completed</div>
+            </div>
+        </form>
+
+        <div class="form-actions">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-primary" disabled>Create Task</button>
+        </div>
+    </div>
+
+    <div class="annotation">
+        ✓ Form loads with empty fields. Title is required. Submit button is DISABLED until title is filled.
+        <br>✓ Next step: User enters title → Form transitions to 003-create-form-filled.html
+    </div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN-1 Wireframe: Success Toast Notification</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #212121;
+        }
+        .wireframe-label {
+            background: #e8f5e9;
+            border: 2px dashed #388e3c;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+        .page-background {
+            background: white;
+            padding: 40px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            min-height: 400px;
+        }
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .toast {
+            background: #388e3c;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+            font-size: 14px;
+        }
+        .toast-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .toast-content {
+            flex: 1;
+        }
+        .toast-message {
+            font-weight: 600;
+        }
+        .toast-detail {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .toast-close:hover {
+            opacity: 0.8;
+        }
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.4);
+            animation: shrink 5s linear forwards;
+            border-radius: 0 0 4px 0;
+        }
+        @keyframes shrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .demo-content {
+            font-size: 14px;
+            color: #757575;
+            line-height: 1.6;
+        }
+        .annotation {
+            font-size: 12px;
+            color: #666;
+            background: #fff3e0;
+            padding: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #f57c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">✅ Wireframe: Success Toast Notification (006)</div>
+
+    <div class="page-background">
+        <div class="demo-content">
+            <h2 style="margin-bottom: 16px;">📋 Task List View</h2>
+            <p>After creating a task, the success toast notification appears in the bottom-right corner of the screen for 5 seconds.</p>
+            <p style="margin-top: 12px;">The toast shows:</p>
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li>✅ Success icon</li>
+                <li>Task title that was created</li>
+                <li>Auto-dismiss after 5 seconds</li>
+                <li>Manual dismiss via × button</li>
+                <li>Progress bar indicating remaining time</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="toast-container">
+        <div class="toast">
+            <div class="toast-icon">✅</div>
+            <div class="toast-content">
+                <div class="toast-message">Task created successfully!</div>
+                <div class="toast-detail">Implement REST API for task creation</div>
+            </div>
+            <button class="toast-close">&times;</button>
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <div class="annotation">
+        ✅ Success toast appears in bottom-right corner (fixed position)
+        <br>✓ Auto-dismisses after 5 seconds (with animated progress bar)
+        <br>✓ User can manually dismiss by clicking × button
+        <br>✓ Next step: User is redirected to task detail page (007-task-detail-page.html)
+    </div>
+</body>
+</html>

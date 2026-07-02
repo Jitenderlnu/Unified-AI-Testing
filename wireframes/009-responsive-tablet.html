@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN-1 Wireframe: Responsive Tablet Layout</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #212121;
+        }
+        .wireframe-label {
+            background: #e3f2fd;
+            border: 2px dashed #1976d2;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        .device-frame {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .device-header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .device-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .device-screen {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-section.full {
+            grid-column: 1 / -1;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #212121;
+        }
+        .form-group label .required {
+            color: #d32f2f;
+        }
+        .form-group input,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+        .char-count {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .helper-text {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 4px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            grid-column: 1 / -1;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-primary:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: white;
+            color: #1976d2;
+            border: 1px solid #1976d2;
+        }
+        .annotation {
+            font-size: 12px;
+            color: #666;
+            background: #fff3e0;
+            padding: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #f57c00;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">📑 Wireframe: Responsive Tablet Layout (009) - Width 768-1023px</div>
+
+    <div class="device-frame">
+        <div class="device-header">
+            <h1>📋 Create New Task</h1>
+            <button class="btn-close">&times;</button>
+        </div>
+
+        <form class="device-screen">
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Title <span class="required">*</span></label>
+                    <input type="text" placeholder="Enter task title (max 255 characters)">
+                    <div class="char-count">0/255</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Due Date (optional)</label>
+                    <input type="date">
+                </div>
+            </div>
+
+            <div class="form-section full">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea placeholder="Add detailed description (optional, supports markdown)"></textarea>
+                    <div class="helper-text">Use **bold**, _italic_, and `code` formatting</div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary" disabled>Create Task</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="annotation">
+        📑 Tablet Layout Optimizations:
+        <br>✓ Two-column grid for Title + Due Date (side by side)
+        <br>✓ Full-width Description field below (better use of horizontal space)
+        <br>✓ Increased padding (24px) for better spacing
+        <br>✓ Larger font sizes (14px) for readability
+        <br>✓ Balanced layout leveraging medium screen width
+        <br>✓ Responsive breakpoint: 768px - 1023px
+    </div>
+</body>
+</html>
