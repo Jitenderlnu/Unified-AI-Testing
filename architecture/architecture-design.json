@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "presentation": "React UI",
+    "api": "Express.js REST API",
+    "business": "Node.js Service Layer",
+    "data": "Prisma ORM + SQLite"
+  },
+  "components": [
+    "Authentication Service",
+    "Project Management Service",
+    "Data Synchronization Service",
+    "Notification Service"
+  ]
+}

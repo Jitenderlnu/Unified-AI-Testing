@@ -1,0 +1,22 @@
+{
+  "preDeployment": [
+    "✓ All tests passing",
+    "✓ Code review completed",
+    "✓ Security scan completed",
+    "✓ Performance benchmarks OK",
+    "✓ Database backup created"
+  ],
+  "postDeployment": [
+    "☐ Verify API endpoints responding",
+    "☐ Check database connectivity",
+    "☐ Monitor error logs",
+    "☐ Verify monitoring alerts",
+    "☐ Test critical user flows"
+  ],
+  "rollbackTriggers": [
+    "Error rate > 5%",
+    "P95 latency > 2000ms",
+    "Database connection failures",
+    "Critical security vulnerability"
+  ]
+}

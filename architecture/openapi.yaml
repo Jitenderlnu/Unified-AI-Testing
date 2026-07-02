@@ -1,0 +1,1356 @@
+openapi: 3.0.0
+info:
+  title: Unified AI Testing - Task Management API
+  description: |
+    RESTful API for task management module (UN-1 Foundation Story)
+
+    **API Features:**
+    - Task creation, retrieval, update, and deletion (CRUD)
+    - Task status and priority management
+    - User assignment and ownership tracking
+    - Audit logging for compliance
+    - Real-time validation and error handling
+    - Comprehensive search and filtering
+
+    **Design Principles:**
+    - RESTful architecture following HTTP semantics
+    - JSON request/response format
+    - Atomic operations with transaction support
+    - Optimistic locking for concurrent updates
+    - Detailed error responses with actionable messages
+
+    **Performance SLA:**
+    - Form validation: <50ms
+    - Task creation: <200ms (p95)
+    - Task retrieval: <100ms (p95)
+    - List operations: <500ms (p95)
+  version: 1.0.0
+  contact:
+    name: Development Team
+    email: dev@example.com
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production API
+  - url: http://localhost:3000/v1
+    description: Local Development API
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Tasks
+    description: Task CRUD operations (UN-1 Foundation)
+  - name: Task Status
+    description: Task status transitions and workflows (UN-5)
+  - name: Assignments
+    description: Task assignment management (UN-4)
+  - name: Comments
+    description: Task comments and collaboration
+  - name: Attachments
+    description: File attachments for tasks
+  - name: Tags
+    description: Task tags and categorization (UN-9)
+  - name: Notifications
+    description: User notifications (UN-6)
+  - name: Search
+    description: Task search and filtering
+
+# ============================================================================
+# AUTHENTICATION ENDPOINTS
+# ============================================================================
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account with email and password
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: SecurePass123!
+                name:
+                  type: string
+                  minLength: 2
+                  example: John Doe
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticate user and create session
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePass123!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Invalidate current session
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user
+      description: Retrieve authenticated user's profile
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+# ============================================================================
+# TASK ENDPOINTS - UN-1 FOUNDATION
+# ============================================================================
+  /tasks:
+    post:
+      tags:
+        - Tasks
+      summary: Create a new task
+      description: |
+        Create a new task with title, optional description, and due date.
+
+        **Validation Rules:**
+        - Title: required, 1-255 characters, alphanumeric + special chars
+        - Description: optional, max 5000 chars, markdown syntax allowed
+        - Due Date: optional, must be future date, ISO8601 format
+
+        **Response:**
+        - 201 Created with task object
+        - Includes generated task ID, timestamps, defaults (status=NOT_STARTED)
+
+        **Audit:**
+        - Automatically creates audit log entry
+      operationId: createTask
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              example:
+                errors:
+                  title: Title is required
+                  description: Description must be valid markdown
+                  dueDate: Due date must be in the future
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags:
+        - Tasks
+      summary: List tasks
+      description: |
+        Retrieve paginated list of tasks with optional filtering and sorting.
+
+        **Filters:**
+        - status: NOT_STARTED, IN_PROGRESS, COMPLETED, etc.
+        - priority: LOWEST, LOW, MEDIUM, HIGH, HIGHEST, URGENT
+        - assignee: Filter by assignee ID
+        - owner: Filter by owner ID
+        - dueDate: Range filter (before/after)
+
+        **Pagination:**
+        - Default: 20 items per page
+        - Max: 100 items per page
+      operationId: listTasks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/TaskStatus'
+        - name: priority
+          in: query
+          schema:
+            $ref: '#/components/schemas/Priority'
+        - name: assignee
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [createdAt, dueDate, priority, status]
+            default: createdAt
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Task list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /tasks/{taskId}:
+    get:
+      tags:
+        - Tasks
+      summary: Get task details
+      description: Retrieve full task details by ID
+      operationId: getTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Tasks
+      summary: Update task
+      description: |
+        Update task details with optimistic locking.
+
+        **Concurrency Control:**
+        - Uses version field to detect conflicts
+        - If version mismatch, returns 409 Conflict
+        - Client must retry with latest version
+      operationId: updateTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflict - Version mismatch (optimistic locking)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task was modified by another user
+                  currentVersion:
+                    type: integer
+                    example: 2
+
+    delete:
+      tags:
+        - Tasks
+      summary: Delete task
+      description: Soft-delete or hard-delete a task (configurable)
+      operationId: deleteTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Task deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# TASK STATUS ENDPOINTS - UN-5
+# ============================================================================
+  /tasks/{taskId}/status:
+    patch:
+      tags:
+        - Task Status
+      summary: Update task status
+      description: |
+        Transition task to a new status.
+
+        **Workflow Rules:**
+        - NOT_STARTED → IN_PROGRESS, CANCELLED
+        - IN_PROGRESS → IN_REVIEW, BLOCKED, CANCELLED
+        - IN_REVIEW → COMPLETED, IN_PROGRESS, BLOCKED
+        - BLOCKED → IN_PROGRESS
+        - COMPLETED → (read-only, cannot revert)
+      operationId: updateTaskStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  $ref: '#/components/schemas/TaskStatus'
+      responses:
+        '200':
+          description: Status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# TASK ASSIGNMENT ENDPOINTS - UN-4
+# ============================================================================
+  /tasks/{taskId}/assign:
+    patch:
+      tags:
+        - Assignments
+      summary: Assign task to user
+      description: |
+        Assign task to a team member.
+
+        **Permission Rules:**
+        - Task owner or admin can assign
+        - Cannot assign to inactive users
+        - Notifications sent to assignee
+      operationId: assignTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - assigneeId
+              properties:
+                assigneeId:
+                  type: string
+                  description: User ID to assign task to
+      responses:
+        '200':
+          description: Task assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tasks/{taskId}/unassign:
+    patch:
+      tags:
+        - Assignments
+      summary: Unassign task
+      description: Remove assignee from task
+      operationId: unassignTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task unassigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# COMMENT ENDPOINTS
+# ============================================================================
+  /tasks/{taskId}/comments:
+    post:
+      tags:
+        - Comments
+      summary: Add comment to task
+      description: Create a new comment on a task
+      operationId: createComment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 5000
+                parentId:
+                  type: string
+                  description: Optional - ID of parent comment for threading
+      responses:
+        '201':
+          description: Comment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    get:
+      tags:
+        - Comments
+      summary: List task comments
+      description: Get all comments for a task with pagination
+      operationId: listComments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommentResponse'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tasks/{taskId}/comments/{commentId}:
+    delete:
+      tags:
+        - Comments
+      summary: Delete comment
+      description: Remove a comment from a task
+      operationId: deleteComment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Comment deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# TAG ENDPOINTS - UN-9
+# ============================================================================
+  /tags:
+    get:
+      tags:
+        - Tags
+      summary: List all tags
+      description: Retrieve all available tags
+      operationId: listTags
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Tags retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TagResponse'
+
+  /tasks/{taskId}/tags:
+    post:
+      tags:
+        - Tags
+      summary: Add tag to task
+      description: Add existing or new tag to task
+      operationId: addTagToTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tagId
+              properties:
+                tagId:
+                  type: string
+      responses:
+        '200':
+          description: Tag added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Tags
+      summary: Remove tag from task
+      description: Remove tag from task
+      operationId: removeTagFromTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: tagId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# SEARCH ENDPOINTS
+# ============================================================================
+  /search/tasks:
+    get:
+      tags:
+        - Search
+      summary: Search tasks
+      description: |
+        Full-text search with advanced filtering.
+
+        **Search Capabilities:**
+        - Full-text search on title, description, comments
+        - Advanced filters on status, priority, assignee, dates
+        - Faceted search results
+        - Sorting by relevance, date, priority
+      operationId: searchTasks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search query string
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/TaskStatus'
+        - name: priority
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Priority'
+        - name: assignee
+          in: query
+          schema:
+            type: string
+        - name: dueDateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dueDateTo
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResultsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+# ============================================================================
+# NOTIFICATION ENDPOINTS - UN-6
+# ============================================================================
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: List user notifications
+      description: Get paginated notifications for current user
+      operationId: listNotifications
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Notifications retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NotificationResponse'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /notifications/{notificationId}/read:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark notification as read
+      description: Mark a notification as read
+      operationId: markNotificationAsRead
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Notification marked as read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# AUDIT LOG ENDPOINTS
+# ============================================================================
+  /tasks/{taskId}/audit:
+    get:
+      tags:
+        - Tasks
+      summary: Get task audit log
+      description: Retrieve audit trail for a task
+      operationId: getTaskAuditLog
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Audit log retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditLogs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLogResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ============================================================================
+# COMPONENTS
+# ============================================================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /auth/login
+
+  schemas:
+    # ========================================================================
+    # REQUEST SCHEMAS
+    # ========================================================================
+    CreateTaskRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Task title (required)
+          example: Implement REST API for task creation
+        description:
+          type: string
+          maxLength: 5000
+          description: Task description in markdown (optional)
+          example: Create a POST /api/tasks endpoint with validation
+        dueDate:
+          type: string
+          format: date-time
+          description: Task due date in ISO8601 format (optional, must be future)
+          example: '2026-07-15T00:00:00Z'
+        priority:
+          $ref: '#/components/schemas/Priority'
+          default: MEDIUM
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tag IDs to attach
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 5000
+        dueDate:
+          type: string
+          format: date-time
+        priority:
+          $ref: '#/components/schemas/Priority'
+        version:
+          type: integer
+          description: Current version for optimistic locking
+
+    # ========================================================================
+    # RESPONSE SCHEMAS
+    # ========================================================================
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        priority:
+          $ref: '#/components/schemas/Priority'
+        dueDate:
+          type: string
+          format: date-time
+        owner:
+          $ref: '#/components/schemas/UserResponse'
+        assignee:
+          $ref: '#/components/schemas/UserResponse'
+          nullable: true
+        version:
+          type: integer
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaskListResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskResponse'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, MANAGER, MEMBER, VIEWER]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED]
+        createdAt:
+          type: string
+          format: date-time
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        expiresIn:
+          type: integer
+          description: Token expiration in seconds
+
+    CommentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        author:
+          $ref: '#/components/schemas/UserResponse'
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TagResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+          format: color
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+            - TASK_ASSIGNED
+            - TASK_UNASSIGNED
+            - TASK_DUE_SOON
+            - TASK_OVERDUE
+            - COMMENT_MENTION
+            - STATUS_CHANGED
+        title:
+          type: string
+        message:
+          type: string
+        taskId:
+          type: string
+          format: uuid
+          nullable: true
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    AuditLogResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum:
+            - TASK_CREATED
+            - TASK_UPDATED
+            - TASK_DELETED
+            - TASK_ASSIGNED
+            - STATUS_CHANGED
+            - PRIORITY_CHANGED
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        changes:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+
+    SearchResultsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskResponse'
+        facets:
+          type: object
+          properties:
+            status:
+              type: object
+              additionalProperties:
+                type: integer
+            priority:
+              type: object
+              additionalProperties:
+                type: integer
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+        hasMore:
+          type: boolean
+
+    # ========================================================================
+    # ENUM SCHEMAS
+    # ========================================================================
+    TaskStatus:
+      type: string
+      enum:
+        - NOT_STARTED
+        - IN_PROGRESS
+        - IN_REVIEW
+        - BLOCKED
+        - COMPLETED
+        - CANCELLED
+        - DRAFT
+
+    Priority:
+      type: string
+      enum:
+        - LOWEST
+        - LOW
+        - MEDIUM
+        - HIGH
+        - HIGHEST
+        - URGENT
+
+    # ========================================================================
+    # ERROR SCHEMAS
+    # ========================================================================
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+          description: Error code for client handling
+        details:
+          type: object
+          additionalProperties: true
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            title: Title is required
+            dueDate: Due date must be in the future
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Unauthorized
+              message:
+                type: string
+                example: Invalid or expired token
+
+    NotFound:
+      description: Not found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Not Found
+              message:
+                type: string
+                example: Task not found
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Internal Server Error
+              message:
+                type: string
+                example: An unexpected error occurred. Please try again.
+              code:
+                type: string
+                example: ERR_INTERNAL
+
+# ============================================================================
+# ADDITIONAL DOCUMENTATION
+# ============================================================================
+x-api-properties:
+  rateLimit:
+    requestsPerMinute: 60
+    requestsPerHour: 1000
+
+  defaultHeaders:
+    X-Request-ID: UUID of the request for tracing
+    X-RateLimit-Remaining: Requests remaining in current window
+
+  errorHandling:
+    - The API follows HTTP status codes semantically
+    - 4xx errors indicate client errors (validation, auth, etc.)
+    - 5xx errors indicate server errors (database, runtime, etc.)
+    - All errors include actionable messages for client handling
+
+  performance:
+    - Form validation response time target: <50ms
+    - Task creation response time target: <200ms (p95)
+    - List operations response time target: <500ms (p95)
+    - Gzip compression enabled for responses >1KB
+
+  authentication:
+    - JWT tokens expire in 24 hours
+    - Refresh token endpoint available at /auth/refresh
+    - HTTPS required for all API requests (except local development)
+
+  versioning:
+    - API version in URL path (v1, v2, etc.)
+    - Version sunset policy: Minimum 12 months notice
+    - Current stable version: v1

@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "baseURL": "/api/v1",
+  "endpoints": [
+    {
+      "path": "/auth/register",
+      "method": "POST",
+      "description": "Register new user",
+      "auth": false
+    },
+    {
+      "path": "/auth/login",
+      "method": "POST",
+      "description": "Authenticate user",
+      "auth": false
+    },
+    {
+      "path": "/projects",
+      "method": "GET",
+      "description": "List user projects",
+      "auth": true
+    },
+    {
+      "path": "/projects",
+      "method": "POST",
+      "description": "Create new project",
+      "auth": true
+    }
+  ]
+}

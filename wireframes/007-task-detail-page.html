@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN-1 Wireframe: Task Detail Page</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #212121;
+        }
+        .wireframe-label {
+            background: #e8f5e9;
+            border: 2px dashed #388e3c;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #1976d2;
+            border: 1px solid #e0e0e0;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .task-detail {
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+        .task-header {
+            padding: 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .task-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #212121;
+        }
+        .task-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+            color: #757575;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #fff3e0;
+            color: #f57c00;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .task-body {
+            padding: 24px;
+        }
+        .section {
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .section-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #212121;
+        }
+        .task-actions {
+            border-top: 1px solid #e0e0e0;
+            padding: 20px;
+            display: flex;
+            gap: 12px;
+        }
+        .btn-action {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+        .btn-secondary-action {
+            background: white;
+            color: #757575;
+            border: 1px solid #e0e0e0;
+        }
+        .btn-secondary-action:hover {
+            background: #f5f5f5;
+        }
+        .annotation {
+            font-size: 12px;
+            color: #666;
+            background: #fff3e0;
+            padding: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #f57c00;
+        }
+        .empty-placeholder {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">📄 Wireframe: Task Detail Page (007) - Post-Creation View</div>
+
+    <div class="header">
+        <h1>← Back to Task List</h1>
+        <button class="btn btn-secondary">Close</button>
+    </div>
+
+    <div class="task-detail">
+        <div class="task-header">
+            <h2 class="task-title">Implement REST API for task creation</h2>
+            <div class="task-meta">
+                <div class="meta-item">
+                    <span class="status-badge">NOT STARTED</span>
+                </div>
+                <div class="meta-item">ID: UN-1</div>
+                <div class="meta-item">📅 Due: 2026-07-15</div>
+                <div class="meta-item">👤 Owner: Current User</div>
+                <div class="meta-item">Created: Just now</div>
+            </div>
+        </div>
+
+        <div class="task-body">
+            <div class="section">
+                <div class="section-title">Description</div>
+                <div class="section-content">
+                    <p>Create a POST /api/tasks endpoint that accepts title, description, and due date.</p>
+                    <p style="margin-top: 8px;"><strong>Requirements:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 4px;">
+                        <li>Validate all required fields</li>
+                        <li>Store in SQLite database</li>
+                        <li>Return 201 Created with task ID</li>
+                        <li>Log audit trail</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Assignee</div>
+                <div class="section-content empty-placeholder">
+                    Not assigned yet
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Priority</div>
+                <div class="section-content empty-placeholder">
+                    Not set
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Activity</div>
+                <div class="section-content">
+                    <div>✓ Task created by Current User</div>
+                    <div style="color: #999; font-size: 12px;">Just now</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-actions">
+            <button class="btn-action btn-primary">Edit Task</button>
+            <button class="btn-action btn-secondary-action">Assign</button>
+            <button class="btn-action btn-secondary-action">Set Priority</button>
+            <button class="btn-action btn-secondary-action">Delete</button>
+        </div>
+    </div>
+
+    <div class="annotation">
+        ✅ Task detail page shown after successful creation
+        <br>✓ User sees all task information: title, description, status, metadata
+        <br>✓ User can now edit, assign, or manage the task
+        <br>✓ UN-1 flow complete: Form → Create → Detail Page
+    </div>
+</body>
+</html>

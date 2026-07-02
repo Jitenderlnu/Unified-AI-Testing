@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN-1 Wireframe: Create Form - Validation Error State</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #212121;
+        }
+        .wireframe-label {
+            background: #ffebee;
+            border: 2px dashed #d32f2f;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #c62828;
+        }
+        .form-container {
+            max-width: 600px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .form-header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .form-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #212121;
+        }
+        .form-group label .required {
+            color: #d32f2f;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d32f2f;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            background: #ffebee;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d32f2f;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #d32f2f;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .form-actions {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #bdbdbd;
+            color: white;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: white;
+            color: #1976d2;
+            border: 1px solid #1976d2;
+        }
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+        .helper-text {
+            font-size: 12px;
+            color: #d32f2f;
+            margin-top: 4px;
+        }
+        .annotation {
+            font-size: 12px;
+            color: #666;
+            background: #fff3e0;
+            padding: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #f57c00;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-label">❌ Wireframe: Create Form - Validation Error State (004)</div>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h1>📋 Create New Task</h1>
+            <button class="btn-close">&times;</button>
+        </div>
+
+        <form class="form-body">
+            <div class="form-group">
+                <label>Title <span class="required">*</span></label>
+                <input type="text" value="This is a very long task title that exceeds the 255 character limit and should trigger a validation error message that tells the user to shorten the text before they can submit this form to create a new task in the system" maxlength="255">
+                <div class="char-count">❌ 267/255 (12 chars over)</div>
+                <div class="error-message">❌ Title must be 255 characters or less</div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea>Invalid markdown:
+[broken link (missing URL)
+**unclosed bold text
+`unclosed code block</textarea>
+                <div class="error-message">⚠️ Description has syntax errors (unclosed formatting)</div>
+            </div>
+
+            <div class="form-group">
+                <label>Due Date (optional)</label>
+                <input type="date" value="2026-06-30">
+                <div class="error-message">❌ Due date must be in the future</div>
+            </div>
+        </form>
+
+        <div class="form-actions">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-primary" disabled>Create Task</button>
+        </div>
+    </div>
+
+    <div class="annotation">
+        ❌ Form shows validation errors on all fields. Submit button is DISABLED.
+        <br>✓ User must fix errors and correct field values before submit can proceed.
+        <br>✓ Real-time validation feedback helps user correct mistakes immediately.
+    </div>
+</body>
+</html>
